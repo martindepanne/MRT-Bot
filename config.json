@@ -1,0 +1,20 @@
+{
+	"token": "",
+	"owners": [
+		"689911388713517093"
+	],
+	"prefix": "+",
+	"color": "#96480C",
+	"titre": "Support",
+	"description": "Pour contacter le staff, veuillez sélectionner une raison",
+	"tfooter": "Support",
+	"option1": "Problème bot",
+	"option2": "Suggestion",
+	"option3": "Autre",
+	"option4": "",
+	"ctitre": "​🚧​ Captcha",
+	"cdescription": "Clique sur le bouton ci-dessous pour te vérifier",
+	"ccolor": "#96480C",
+	"cimage": "https://martindepanne.x10.mx",
+	"cemoji": "​:japanese_ogre: ​"
+}
