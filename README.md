@@ -34,5 +34,5 @@ node index.js
 Pour mettre à jour, il suffit de conserver la database et la config puis de les glisser dans un dossier à jour
 
 ## Crédit
-- Martin Dépanne (([Discord](https://guns.lol/martindepanne)/([Github](https://github.com/martindepanne))))
+- Martin Dépanne ([Discord](https://guns.lol/martindepanne)/([Github](https://github.com/martindepanne))
 - Rework du bot de 4wip
