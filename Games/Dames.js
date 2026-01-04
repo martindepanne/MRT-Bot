@@ -9,11 +9,12 @@ class Dames {
         this.player1 = options.user || options.message.author;
         this.player2 = options.opponent || null;
         this.difficulty = options.difficulty || 'normal';
+        this.isAi = !options.opponent;
         
         this.board = this.createInitialBoard();
         this.turn = 'W'; 
         this.selected = null;
-        this.lastMove = "La partie commence ! Les Dames (⭐) peuvent glisser sur toute la diagonale.";
+        this.lastMove = "La partie commence !";
         this.symbols = {
             0: '⬛', 1: '⚪', 2: '🔴', 3: '⭐', 4: '🌟', 'bg': '🟫'
         };
@@ -68,49 +69,44 @@ class Dames {
         const collector = gameMessage.createMessageComponentCollector({ time: 600000 });
 
         collector.on('collect', async (i) => {
-            if (i.user.id !== this.player1.id) return i.reply({ content: "Ce n'est pas votre partie !", ephemeral: true });
+            const currentPlayer = this.turn === 'W' ? this.player1 : this.player2;
+
+            if (i.user.id !== currentPlayer.id) {
+                return i.reply({ content: `C'est au tour de ${currentPlayer.username} !`, ephemeral: true });
+            }
 
             const [action, r, c] = i.values[0].split('_');
             const row = parseInt(r), col = parseInt(c);
 
             if (action === 'sel') {
-                if (this.selected && this.selected.r === row && this.selected.c === col) {
-                    this.selected = null;
-                } else {
-                    this.selected = { r: row, c: col };
-                }
-                await i.update({ embeds: [this.createEmbed(this.selected ? "Choisissez la destination..." : null)], components: this.createComponents() });
+                this.selected = (this.selected && this.selected.r === row && this.selected.c === col) ? null : { r: row, c: col };
+                return await i.update({ embeds: [this.createEmbed(this.selected ? "Choisissez la destination..." : null)], components: this.createComponents() });
             } else {
                 const fromCoord = `${String.fromCharCode(65 + this.selected.c)}${this.selected.r + 1}`;
                 const toCoord = `${String.fromCharCode(65 + col)}${row + 1}`;
                 
                 this.movePiece(this.selected.r, this.selected.c, row, col);
-                this.lastMove = `👤 **Vous** : **${fromCoord}** ➔ **${toCoord}**.`;
+                this.lastMove = `${this.turn === 'W' ? '⚪' : '🔴'} **${i.user.username}** : **${fromCoord}** ➔ **${toCoord}**.`;
                 this.selected = null;
+                this.turn = this.turn === 'W' ? 'B' : 'W';
 
-                await i.update({ 
-                    embeds: [this.createEmbed("L'IA réfléchit... 🧠")], 
-                    components: this.createComponents(true) 
-                });
-
-                if (!this.player2) {
-                    await this.sleep(1500); 
+                if (this.isAi && this.turn === 'B') {
+                    await i.update({ embeds: [this.createEmbed("L'IA réfléchit... 🧠")], components: this.createComponents(true) });
+                    
+                    await this.sleep(1500);
                     const iaLog = this.makeMoveIA();
                     this.lastMove = iaLog;
-                    
-                    if (iaLog === "IA bloquée ! Vous avez gagné.") {
+                    this.turn = 'W';
+
+                    if (iaLog.includes("gagné")) {
                         this.updateStats(this.player1.id);
-                        return gameMessage.edit({ 
-                            embeds: [this.createEmbed("Partie terminée !")], 
-                            components: this.createComponents(true) 
-                        });
+                        return await gameMessage.edit({ embeds: [this.createEmbed("Partie terminée !")], components: [] });
                     }
+
+                    return await gameMessage.edit({ embeds: [this.createEmbed()], components: this.createComponents() });
                 }
 
-                await gameMessage.edit({ 
-                    embeds: [this.createEmbed()], 
-                    components: this.createComponents() 
-                });
+                await i.update({ embeds: [this.createEmbed()], components: this.createComponents() });
             }
         });
     }
@@ -118,17 +114,14 @@ class Dames {
     movePiece(fromR, fromC, toR, toC) {
         const dr = toR - fromR;
         const dc = toC - fromC;
-        const stepR = dr / Math.abs(dr);
-        const stepC = dc / Math.abs(dc);
-
-        let currR = fromR + stepR;
-        let currC = fromC + stepC;
-        while (currR !== toR && currC !== toC) {
-            if (this.board[currR][currC] !== 0 && this.board[currR][currC] !== 'bg') {
-                this.board[currR][currC] = 0;
+        const dist = Math.abs(dr);
+        
+        if (dist > 1) {
+            const stepR = dr / dist;
+            const stepC = dc / dist;
+            for (let i = 1; i < dist; i++) {
+                this.board[fromR + (stepR * i)][fromC + (stepC * i)] = 0;
             }
-            currR += stepR;
-            currC += stepC;
         }
 
         this.board[toR][toC] = this.board[fromR][fromC];
@@ -152,18 +145,14 @@ class Dames {
             for (let dist = 1; dist < 8; dist++) {
                 let nr = r + dr * dist;
                 let nc = c + dc * dist;
-
                 if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8 || this.board[nr][nc] === 'bg') break;
-
                 if (this.board[nr][nc] === 0) {
                     moves.push({ fR: r, fC: c, tR: nr, tC: nc, kill: false });
                     if (!isKing) break;
                 } else {
-                    const midPiece = this.board[nr][nc];
-                    const isMidWhite = (midPiece === 1 || midPiece === 3);
+                    const isMidWhite = (this.board[nr][nc] === 1 || this.board[nr][nc] === 3);
                     if (isWhite !== isMidWhite) {
-                        let jr = nr + dr;
-                        let jc = nc + dc;
+                        let jr = nr + dr, jc = nc + dc;
                         if (jr >= 0 && jr < 8 && jc >= 0 && jc < 8 && this.board[jr][jc] === 0) {
                             moves.push({ fR: r, fC: c, tR: jr, tC: jc, kill: true });
                         }
@@ -179,72 +168,46 @@ class Dames {
         let allMoves = [];
         for (let r = 0; r < 8; r++) {
             for (let c = 0; c < 8; c++) {
-                if (this.board[r][c] === 2 || this.board[r][c] === 4) {
-                    allMoves.push(...this.getValidMoves(r, c));
-                }
+                if (this.board[r][c] === 2 || this.board[r][c] === 4) allMoves.push(...this.getValidMoves(r, c));
             }
         }
-
         if (allMoves.length === 0) return "IA bloquée ! Vous avez gagné.";
-
-        let selected;
         const kills = allMoves.filter(m => m.kill);
-
-        if (this.difficulty === 'easy') {
-            selected = allMoves[Math.floor(Math.random() * allMoves.length)];
-        } else {
-            selected = kills.length > 0 
-                ? kills[Math.floor(Math.random() * kills.length)] 
-                : allMoves[Math.floor(Math.random() * allMoves.length)];
-        }
-
-        const from = `${String.fromCharCode(65 + selected.fC)}${selected.fR + 1}`;
-        const to = `${String.fromCharCode(65 + selected.tC)}${selected.tR + 1}`;
+        const selected = (this.difficulty !== 'easy' && kills.length > 0) ? kills[Math.floor(Math.random() * kills.length)] : allMoves[Math.floor(Math.random() * allMoves.length)];
+        const from = `${String.fromCharCode(65 + selected.fC)}${selected.fR + 1}`, to = `${String.fromCharCode(65 + selected.tC)}${selected.tR + 1}`;
         this.movePiece(selected.fR, selected.fC, selected.tR, selected.tC);
-        
-        return selected.kill 
-            ? `🤖 **IA** : capture en **${to}** ! ⚔️` 
-            : `🤖 **IA** : **${from}** ➔ **${to}**.`;
+        return selected.kill ? `🤖 **IA** : capture en **${to}** ! ⚔️` : `🤖 **IA** : **${from}** ➔ **${to}**.`;
     }
 
     createEmbed(status) {
+        const turnLabel = this.turn === 'W' ? `Blanc (${this.player1.username})` : `Rouge (${this.isAi ? 'IA' : this.player2.username})`;
         return new EmbedBuilder()
             .setColor(this.config.color)
-            .setTitle(`Dames - ${this.difficulty.toUpperCase()}`)
-            .addFields({ name: 'Dernière action', value: this.lastMove }) 
-            .setDescription(`${status || "C'est votre tour (Blanc) :"}\n\n${this.renderBoard()}`)
-            .setFooter({ text: `Système de glissade des Dames ⭐ activé.` });
+            .setTitle(`Dames - ${this.isAi ? 'Contre IA (' + this.difficulty + ')' : 'Duel'}`)
+            .addFields({ name: 'Dernière action', value: this.lastMove }, { name: 'Au tour de', value: turnLabel })
+            .setDescription(`${status || "Plateau de jeu :"}\n\n${this.renderBoard()}`)
+            .setFooter({ text: `Blancs: ⚪⭐ | Rouges: 🔴🌟` });
     }
 
     createComponents(disabled = false) {
         const options = [];
+        const turnColor = this.turn === 'W' ? [1, 3] : [2, 4];
         if (!this.selected) {
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
-                    if (this.board[r][c] === 1 || this.board[r][c] === 3) {
+                    if (turnColor.includes(this.board[r][c])) {
                         const moves = this.getValidMoves(r, c);
-                        if (moves.length > 0) {
-                            const icon = this.board[r][c] === 3 ? '⭐' : '⚪';
-                            options.push({ label: `${icon} Pion ${String.fromCharCode(65 + c)}${r + 1}`, value: `sel_${r}_${c}` });
-                        }
+                        if (moves.length > 0) options.push({ label: `Pion ${String.fromCharCode(65 + c)}${r + 1}`, value: `sel_${r}_${c}` });
                     }
                 }
             }
         } else {
             const moves = this.getValidMoves(this.selected.r, this.selected.c);
-            for (let m of moves) {
-                const type = m.kill ? "⚔️ Capturer" : "📍 Aller";
-                options.push({ label: `${type} en ${String.fromCharCode(65 + m.tC)}${m.tR + 1}`, value: `mov_${m.tR}_${m.tC}` });
-            }
+            for (let m of moves) options.push({ label: `${m.kill ? "⚔️ Capturer" : "📍 Aller"} en ${String.fromCharCode(65 + m.tC)}${m.tR + 1}`, value: `mov_${m.tR}_${m.tC}` });
             options.push({ label: "❌ Annuler", value: `sel_${this.selected.r}_${this.selected.c}` });
         }
-        
-        const menu = new StringSelectMenuBuilder()
-            .setCustomId('dames_move')
-            .setPlaceholder(this.selected ? 'Destination...' : 'Sélectionnez un pion...')
-            .setDisabled(disabled || (options.length === 0 && !this.selected)) 
+        const menu = new StringSelectMenuBuilder().setCustomId('dames_move').setPlaceholder('Sélectionnez un pion...').setDisabled(disabled || (options.length === 0 && !this.selected))
             .addOptions(options.length > 0 ? options.slice(0, 25) : [{ label: "Aucun mouvement", value: "none" }]);
-
         return [new ActionRowBuilder().addComponents(menu)];
     }
 }
