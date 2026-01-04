@@ -72,6 +72,11 @@ const dbcreate = () => {
                 url TEXT,
                 genre TEXT,
                 addedBy TEXT
+                )`,
+
+            `CREATE TABLE IF NOT EXISTS autorole (
+                guildId TEXT PRIMARY KEY,
+                roleId TEXT
                 )`
             
             
