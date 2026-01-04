@@ -65,7 +65,16 @@ const dbcreate = () => {
                 p4_wins INTEGER DEFAULT 0,
                 ttt_wins INTEGER DEFAULT 0,
                 dames_wins INTEGER DEFAULT 0
-            )`
+            )`, 
+            `CREATE TABLE IF NOT EXISTS movies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT,
+                url TEXT,
+                genre TEXT,
+                addedBy TEXT
+                )`
+            
+            
         ];
 
         queries.forEach(query => {

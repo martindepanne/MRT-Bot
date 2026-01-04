@@ -85,6 +85,23 @@ export default {
         }
 
         if (interaction.isButton()) {
+            
+            if (interaction.customId === 'open_recherche_modal') {
+                const modal = new ModalBuilder()
+                    .setTitle('Menu de recherche')
+                    .setCustomId('recherche_menu');
+
+                const recherche = new TextInputBuilder()
+                    .setLabel('🍿・Titre de votre film')
+                    .setCustomId('film_name')
+                    .setPlaceholder('Exemple: Inception')
+                    .setStyle(TextInputStyle.Short)
+                    .setRequired(true);
+
+                modal.addComponents(new ActionRowBuilder().addComponents(recherche));
+                return await interaction.showModal(modal);
+            }
+
             if (interaction.customId.startsWith('ttt_play_')) {
                 const [, , indexStr, level, ownerId] = interaction.customId.split('_');
 
@@ -203,6 +220,41 @@ export default {
         }
 
         if (interaction.isModalSubmit()) {
+            
+            if (interaction.customId === 'recherche_menu') {
+                const filmRecherche = interaction.fields.getTextInputValue('film_name');
+
+                db.all('SELECT * FROM movies WHERE title LIKE ?', [`%${filmRecherche}%`], async (err, rows) => {
+                    if (err) {
+                        console.error(err);
+                        return interaction.reply({ content: "Erreur base de données.", flags: 64 });
+                    }
+
+                    if (rows.length === 0) {
+                        return interaction.reply({ content: `❌ Aucun film trouvé pour "${filmRecherche}".`, flags: 64 });
+                    }
+
+                    const film = rows[0]; 
+                    const embed = new EmbedBuilder()
+                        .setTitle(`🎬 Résultat : ${film.title}`)
+                        .setDescription(`Voici le film trouvé dans notre base SQLite.`)
+                        .addFields(
+                            { name: 'Genre', value: film.genre, inline: true },
+                            { name: 'Ajouté par', value: film.addedBy || "Inconnu", inline: true }
+                        )
+                        .setColor(config.color || 'Blurple');
+
+                    const rowBtn = new ActionRowBuilder().addComponents(
+                        new ButtonBuilder()
+                            .setLabel('Regarder maintenant')
+                            .setStyle(ButtonStyle.Link)
+                            .setURL(film.url)
+                    );
+
+                    return await interaction.reply({ embeds: [embed], components: [rowBtn], flags: 64 });
+                });
+            }
+
             if (interaction.customId === 'modal_verify_setup') {
                 const title = interaction.fields.getTextInputValue('v_title');
                 const desc = interaction.fields.getTextInputValue('v_desc');
