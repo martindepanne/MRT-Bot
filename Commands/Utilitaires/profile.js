@@ -25,7 +25,7 @@ export const command = {
             const joinedAt = member ? time(member.joinedAt, 'R') : "Inconnu";
             const isUHQ = target.id === "689911388713517093" ? "✅" : "❌";
             
-            const bannerStatus = banner ? `➡️ [Lien de la bannière](${banner})` : "❌ (sale pauvre)";
+            const bannerStatus = banner ? `➡️ [Lien de la bannière](${banner})` : "❌ (aucune)";
 
             const infoDescription = [
                 `**Nom d'affichage :** ${target.displayName}`,
@@ -41,13 +41,13 @@ export const command = {
                 if (target.id === message.author.id) {
                     db.run('INSERT INTO profiles (userId, username, displayName) VALUES (?, ?, ?)', 
                         [target.id, target.username, target.displayName], (err) => {
-                            if (err) console.error("Erreur lors de l'insertion du profil:", err.message);
+                            if (err) console.error("Erreur insertion profil:", err.message);
                         });
                 }
                 
                 const tempEmbed = new EmbedBuilder()
                     .setAuthor({ name: `Profil de ${target.username}`, iconURL: target.displayAvatarURL() })
-                    .setColor(config.color)
+                    .setColor(config.color || 'Blurple')
                     .setDescription(`${infoDescription}\n\n*Statistiques indisponibles (aucune victoire).*`)
                     .setThumbnail(target.displayAvatarURL())
                     .setFooter({ text: `Profil généré` })
@@ -59,7 +59,7 @@ export const command = {
 
             const profileEmbed = new EmbedBuilder()
                 .setAuthor({ name: `Profil de ${target.username}`, iconURL: target.displayAvatarURL() })
-                .setColor(config.color)
+                .setColor(config.color || 'Blurple')
                 .setDescription(infoDescription)
                 .setThumbnail(target.displayAvatarURL())
                 .addFields(
