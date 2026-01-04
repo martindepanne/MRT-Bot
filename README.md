@@ -8,6 +8,7 @@
 - [⚙️・Setting up](#setup)
 - [💼・Term](#terms)
 - [🕵️‍♂️・Authors](#authors)
+- [🌐・MAJS](#authors)
 - [🪄・Discord](https://guns.lol/martindepanne)
 
 ## <a id="setup"></a> 📁 〢 Setting up
