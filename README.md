@@ -12,6 +12,7 @@
 - Paramètres
 - Utilitaires
 - Jeux
+- Films
 
 ## Prérequis
 - [Node.js](https://nodejs.org/fr/download/current) (22.12+)
