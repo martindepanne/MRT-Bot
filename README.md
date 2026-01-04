@@ -41,5 +41,5 @@
 
 ### <a id="authors"></a>🕵️‍♂️ 〢 Authors
 - [Martin Dépanne](https://github.com/martindepanne)
-- 4wip
+- [Rework du bot de 4wip](https://github.com/4wip)
 ---
