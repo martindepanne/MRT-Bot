@@ -10,15 +10,28 @@ export default {
             await bot.application.commands.set(bot.arrayOfSlashCommands);
         }
 
-        // Configuration de la présence
-        bot.user.setPresence({
-            activities: [{ 
-                name: 'MRT-Bot', 
-                type: ActivityType.Streaming, 
-                url: 'https://twitch.tv/martindepanne' 
-            }], 
-            status: 'online'
-        });
+bot.user.setPresence({
+    activities: [{ 
+        name: 'MRT-Bot', // Le texte affiché
+        type: ActivityType.Streaming, 
+        url: 'https://twitch.tv/martindepanne' // Lien Twitch/YouTube (obligatoire uniquement pour le type Streaming)
+    }], 
+    status: 'online'
+});
+
+/* DÉTAILS DES TYPES D'ACTIVITÉS (ActivityType) :
+   - ActivityType.Playing   : "Joue à..."
+   - ActivityType.Streaming : "En direct sur..." 
+   - ActivityType.Listening : "Écoute..."
+   - ActivityType.Watching  : "Regarde..."
+   - ActivityType.Competing : "Participe à..."
+
+   DÉTAILS DES STATUTS (status) :
+   - 'online'    : En ligne
+   - 'idle'      : Inactif (AFK)
+   - 'dnd'       : Ne pas déranger
+   - 'invisible' : Apparaît hors-ligne
+*/
         
         console.log(`[READY] ${bot.user.tag} est opérationnel.`);
     }
