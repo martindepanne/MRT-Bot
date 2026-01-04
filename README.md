@@ -11,15 +11,6 @@
 - [🕵️‍♂️・Authors](#authors)
 - [🪄・Discord](https://guns.lol/martindepanne)
 
-## <a id="deploys"></a>📩 〢 Deploys
-[![Deploy](https://raw.githubusercontent.com/Nekros-dsc/deploy-buttons/main/buttons/remade/replit.svg)](https://replit.com/github/martindepanne/MRT-Bot)
-
-[![Deploy](https://raw.githubusercontent.com/Nekros-dsc/deploy-buttons/main/buttons/remade/glitch.svg)](https://glitch.com/edit/#!/import/github/martindepanne/MRT-Bot)
-
-[![Deploy](https://raw.githubusercontent.com/Nekros-dsc/deploy-buttons/main/buttons/remade/heroku.svg)](https://heroku.com/deploy/?template=https://github.com/martindepanne/MRT-Bot)
-
-[![Deploy](https://raw.githubusercontent.com/Nekros-dsc/deploy-buttons/main/buttons/remade/railway.svg)](https://railway.app/new/template?template=https://github.com/martindepanne/MRT-Bot)
-
 ## <a id="setup"></a> 📁 〢 Setting up
 
 - [Node.js](https://nodejs.org/fr/download/current) (22.12+)
