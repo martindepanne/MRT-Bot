@@ -12,7 +12,6 @@
 - Paramètres
 - Utilitaires
 - Jeux
-- Films
 
 ## Prérequis
 - [Node.js](https://nodejs.org/fr/download/current) (22.12+)
@@ -29,11 +28,15 @@ npm install
 ```bash
 node index.js
 ```
+Ou pour éviter les Warning
+```bash
+node --no-deprecation index.js
+```
 
 ## MAJS
 
 Pour mettre à jour, il suffit de conserver la database et la config puis de les glisser dans un dossier à jour
 
 ## Crédit
-- Martin Dépanne ([Discord](https://guns.lol/martindepanne)/([Github](https://github.com/martindepanne))
+- Martin Dépanne (([Discord](https://guns.lol/martindepanne)/([Github](https://github.com/martindepanne))))
 - Rework du bot de 4wip
