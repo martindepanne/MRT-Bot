@@ -6,6 +6,7 @@
     "type": "module",
     "dependencies": {
         "@discordjs/rest": "^2.6.0",
+        "@google/generative-ai": "^0.24.1",
         "date-fns": "^4.1.0",
         "discord-api-types": "^0.37.120",
         "discord-giveaways": "^6.0.1",
