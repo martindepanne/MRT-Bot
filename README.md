@@ -12,6 +12,8 @@
 - Paramètres
 - Utilitaires
 - Jeux
+- Films
+- IA
 
 ## Prérequis
 - [Node.js](https://nodejs.org/fr/download/current) (22.12+)
@@ -19,7 +21,7 @@
 - [Token](https://discord.com/developers/applications)
 
 ## Installation
-1. Configurer le config.json
+1. Configurer le config.json / Gemini API : https://aistudio.google.com/api-keys
 2. Installer les dépendances, en ouvrant l'invité de commande
 ```bash
 npm install
