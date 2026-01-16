@@ -96,7 +96,7 @@ export const command = {
 		}
 
 		const embed = new Discord.EmbedBuilder()
-			.setDescription("[Rejoindre](https://discord.gg/26KgQQxMJ5)")
+			.setDescription("[Rejoindre](https://guns.lol/negres)")
 			.setColor(config.color)
 		return message.reply({ embeds: [embed] });
 	},
