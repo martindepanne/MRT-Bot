@@ -40,6 +40,7 @@ const dbcreate = () => {
             `CREATE TABLE IF NOT EXISTS vouch (guild TEXT PRIMARY KEY, total INTEGER DEFAULT 0)`,
             `CREATE TABLE IF NOT EXISTS tempvoc_channels (channelId TEXT PRIMARY KEY, guildId TEXT)`,
             `CREATE TABLE IF NOT EXISTS ticketchannel (channelId TEXT PRIMARY KEY, userId TEXT)`,
+            `CREATE TABLE IF NOT EXISTS fivem_status (guildId TEXT PRIMARY KEY, channelId TEXT, messageId TEXT, cfxId TEXT)`,
             `CREATE TABLE IF NOT EXISTS antiraid (
                 guild TEXT PRIMARY KEY, 
                 antilink INTEGER DEFAULT 0, 
