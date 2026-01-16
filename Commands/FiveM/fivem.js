@@ -1,8 +1,6 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import axios from 'axios';
-import sqlite3 from 'sqlite3';
-
-const db = new sqlite3.Database('./database.sqlite');
+import db from '../../Events/loadDatabase.js';
 
 export const command = {
     name: 'fivem',
@@ -11,10 +9,23 @@ export const command = {
     description: 'Affiche le statut détaillé du serveur FiveM',
     run: async (bot, message, args, config) => {
 
-        const cfxId = args[0] || config.fivem_id;
-        const discordLink = config.discord_link || "https://discord.gg/invite";
+        const checkPerm = async (message, commandName) => {
+            if (config.owners.includes(message.author.id)) return true;
+            const wl = await new Promise(resolve => db.get('SELECT id FROM whitelist WHERE id = ?', [message.author.id], (err, row) => resolve(!!row)));
+            if (wl) return true;
+            const owner = await new Promise(resolve => db.get('SELECT id FROM owner WHERE id = ?', [message.author.id], (err, row) => resolve(!!row)));
+            if (owner) return true;
+            return false;
+        };
 
-        if (!cfxId) return message.reply("`❌` Aucun ID FiveM trouvé.");
+        if (!(await checkPerm(message, 'fivem'))) {
+            return message.reply("Vous n'avez pas la permission d'utiliser cette commande.").then(m => setTimeout(() => m.delete().catch(() => { }), 3000));
+        }
+
+        const cfxId = args[0] || config.fivem_id;
+        const discordLink = config.discord_link || "https://discord.gg/";
+
+        if (!cfxId) return message.reply("`❌` Aucun ID FiveM trouvé (utilisez `fivem [ID]`).");
 
         const url = `https://servers-frontend.fivem.net/api/servers/single/${cfxId}`;
 
@@ -24,18 +35,18 @@ export const command = {
             const hostname = data.hostname.replace(/\^[0-9]/g, '').trim();
 
             const embed = new EmbedBuilder()
-                .setTitle(`${hostname} - Statut serveur`)
+                .setTitle(`${hostname.slice(0, 250)}`)
                 .setColor(config.color)
                 .setThumbnail(`https://servers-live.fivem.net/servers/icon/${cfxId}.png`)
                 .setDescription(
                     `**Connexion via F8**\n` +
                     `\`\`\`connect cfx.re/join/${cfxId}\`\`\`\n` +
-                    `**${hostname}**\n` +
-                    `\` 🟢 Online \` \n\n` +
-                    `**Joueurs** ㅤㅤㅤㅤㅤㅤㅤ**Ping**\n` +
-                    `\` ${data.clients}/${data.sv_maxclients} \` ㅤㅤㅤㅤ \` ${data.players[0]?.ping || 0} ms \``
+                    `**Statut** : 🟢 Online \n\n` +
+                    `**Joueurs** : \` ${data.clients}/${data.sv_maxclients} \` \n` +
+                    `**Moyenne Ping** : \` ${data.players[0]?.ping || 0} ms \``
                 )
-                .setFooter({ text: `@${hostname}`, iconURL: bot.user.displayAvatarURL() });
+                .setFooter({ text: `CFX-ID: ${cfxId}`, iconURL: bot.user.displayAvatarURL() })
+                .setTimestamp();
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
@@ -55,10 +66,11 @@ export const command = {
             db.run(`INSERT OR REPLACE INTO fivem_status (guildId, channelId, messageId, cfxId) VALUES (?, ?, ?, ?)`, 
                 [message.guild.id, message.channel.id, sent.id, cfxId]);
 
-            message.delete().catch(() => {});
+            if (message.deletable) message.delete().catch(() => {});
 
         } catch (e) {
-            message.reply("`❌` Erreur lors de l'envoi.");
+            console.error(e);
+            message.reply("`❌` Impossible de récupérer les infos du serveur. Vérifiez l'ID.");
         }
     }
 };
