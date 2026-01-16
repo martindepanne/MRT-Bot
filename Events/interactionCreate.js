@@ -109,6 +109,24 @@ export default {
         }
 
         if (interaction.isButton()) {
+
+            if (interaction.customId === 'cbutton') {
+                db.get('SELECT id FROM captcha WHERE guild = ?', [interaction.guild.id], async (err, row) => {
+                    if (err || !row) return interaction.reply({ content: "❌ Système non configuré.", flags: 64 });
+
+                    const role = interaction.guild.roles.cache.get(row.id);
+                    if (!role) return interaction.reply({ content: "❌ Rôle introuvable.", flags: 64 });
+
+                    try {
+                        await interaction.member.roles.add(role);
+                        return interaction.reply({ content: "✅ Vérification réussie !", flags: 64 });
+                    } catch (e) {
+                        return interaction.reply({ content: "❌ Erreur : Je n'ai pas les permissions pour donner ce rôle.", flags: 64 });
+                    }
+                });
+                return;
+            }
+
             if (interaction.customId === 'ticket_close') {
                 await interaction.reply({ content: "Génération du transcript et fermeture...", flags: Discord.MessageFlags.Ephemeral });
 
