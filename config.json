@@ -13,10 +13,10 @@
     "description": "Pour contacter le staff, veuillez sélectionner une raison",
     "footer": "Support",
     "options": {
-      "1": "Problème bot",
-      "2": "Suggestion",
-      "3": "Autre",
-      "4": ""
+      "option1": "Problème bot",
+      "option2": "Suggestion",
+      "option3": "Autre",
+      "option4": ""
     }
   },
 
