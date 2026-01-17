@@ -1,23 +1,36 @@
 {
-	"token": "",
-	"owners": [
-		"689911388713517093"
-	],
-	"prefix": "+",
-	"color": "#96480C",
-	"titre": "Support",
-	"description": "Pour contacter le staff, veuillez sélectionner une raison",
-	"tfooter": "Support",
-	"option1": "Problème bot",
-	"option2": "Suggestion",
-	"option3": "Autre",
-	"option4": "",
-	"ctitre": "​🚧​ Captcha",
-	"cdescription": "Clique sur le bouton ci-dessous pour te vérifier",
-	"ccolor": "#96480C",
-	"cimage": "https://martindepanne.x10.mx",
-	"cemoji": "👹",
-	"geminiKey": "",
-	"fivem_id": "abcdefg",
-	"fivem_discord_link": "https://discord.gg/"
+  "token": "",
+  "owners": ["689911388713517093"],
+  "prefix": "+",
+  "color": "#96480C",
+  "geminiKey": "",
+
+  "ticket": {
+    "titre": "Support",
+    "description": "Pour contacter le staff, veuillez sélectionner une raison",
+    "footer": "Support",
+    "options": {
+      "1": "Problème bot",
+      "2": "Suggestion",
+      "3": "Autre",
+      "4": ""
+    }
+  },
+
+  "captcha": {
+    "titre": "​🚧​ Captcha",
+    "description": "Clique sur le bouton ci-dessous pour te vérifier",
+    "color": "#96480C",
+    "image": "",
+    "emoji": "✅"
+  },
+
+  "fivem": {
+    "id": "abcdefg",
+    "discord_link": "https://discord.gg/"
+  },
+
+  "vouch": {
+    "channelId": "ID_DU_SALON"
+  }
 }
