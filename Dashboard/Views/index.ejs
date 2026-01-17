@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>MRT-Bot | Dashboard</title>
+    <style>
+        :root {
+            --blurple: #5865F2;
+            --success: #43b581;
+            --danger: #f04747;
+            --warning: #faa61a;
+            
+            /* Dark Mode (Valeurs par défaut) */
+            --bg-main: #36393f;
+            --bg-card: #2f3136;
+            --bg-header: #202225;
+            --text-primary: #ffffff;
+            --text-muted: #b9bbbe;
+            --border-color: #202225;
+            --input-bg: #202225;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #ebedef;
+            --bg-card: #ffffff;
+            --bg-header: #f2f3f5;
+            --text-primary: #060607;
+            --text-muted: #4f5660;
+            --border-color: #e3e5e8;
+            --input-bg: #e3e5e8;
+        }
+
+        body { 
+            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-primary); 
+            padding: 40px; 
+            margin: 0; 
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .container { max-width: 1100px; margin: auto; }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            background: var(--bg-header);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-right { display: flex; align-items: center; gap: 15px; }
+
+        h2 { color: var(--text-primary); margin-top: 40px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+
+        .module-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 15px; 
+        }
+
+        .card { 
+            background: var(--bg-card); 
+            padding: 20px; 
+            border-radius: 8px; 
+            border-bottom: 3px solid var(--blurple);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: background 0.2s;
+        }
+
+        .btn-toggle { 
+            border: none; 
+            padding: 10px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            color: white; 
+            font-weight: 500; 
+            width: 100%; 
+            margin-top: 15px;
+        }
+
+        #theme-btn {
+            background: var(--blurple);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #searchInput { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 20px 0; 
+            border-radius: 4px; 
+            border: 1px solid var(--border-color); 
+            background: var(--input-bg); 
+            color: var(--text-primary); 
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
+        tr { background: var(--bg-card); transition: background 0.2s; }
+        th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; padding: 10px 15px; text-align: left; }
+        td { padding: 15px; }
+        td:first-child { border-radius: 8px 0 0 8px; }
+        td:last-child { border-radius: 0 8px 8px 0; }
+
+        .badge { background: var(--bg-header); padding: 4px 10px; border-radius: 4px; font-size: 11px; color: var(--blurple); font-weight: bold; }
+
+        .logout-btn { background: var(--danger); color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MRT-Bot Dashboard</h1>
+            <div class="header-right">
+                <button id="theme-btn" onclick="toggleTheme()">🌓 Thème</button>
+                <a href="/login" class="logout-btn">Déconnexion</a>
+            </div>
+        </div>
+
+        <h2>⚙️ Modules du Bot</h2>
+        <div class="module-grid">
+            <% const availableModules = ['Informations', 'Jeux', 'Films', 'Utilitaires', 'Modérations', 'Gestions', 'Antiraid', 'Contact', 'Paramètres', 'FiveM']; %>
+            <% availableModules.forEach(name => { %>
+                <% const mod = modules.find(m => m.moduleName === name); %>
+                <% const isEnabled = mod ? mod.enabled : 1; %>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong><%= name %></strong>
+                        <span style="font-size: 11px; font-weight: bold; color: <%= isEnabled ? '#43b581' : '#f04747' %>">
+                            ● <%= isEnabled ? 'ACTIF' : 'OFF' %>
+                        </span>
+                    </div>
+                    <form action="/toggle-module" method="POST">
+                        <input type="hidden" name="moduleName" value="<%= name %>">
+                        <input type="hidden" name="currentState" value="<%= isEnabled %>">
+                        <button type="submit" class="btn-toggle" style="background: <%= isEnabled ? '#f04747' : '#43b581' %>">
+                            <%= isEnabled ? 'Désactiver' : 'Activer' %>
+                        </button>
+                    </form>
+                </div>
+            <% }); %>
+        </div>
+
+        <h2>📚 Liste des Commandes</h2>
+        <input type="text" id="searchInput" onkeyup="searchCmd()" placeholder="Rechercher une commande ou un module..." autofocus>
+
+        <table id="cmdTable">
+            <thead>
+                <tr>
+                    <th>Commande</th>
+                    <th>Catégorie</th>
+                    <th>Description</th>
+                    <th>État</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% allCommands.forEach(cmd => { %>
+                    <% const status = cmdStatus.find(s => s.commandName === cmd.name); %>
+                    <% const isEnabled = status ? status.enabled : 1; %>
+                    <tr>
+                        <td><strong style="color: var(--warning);">+<%= cmd.name %></strong></td>
+                        <td><span class="badge"><%= cmd.category %></span></td>
+                        <td style="font-size: 13px; color: var(--text-muted);"><%= cmd.description %></td>
+                        <td>
+                            <form action="/toggle-command" method="POST">
+                                <input type="hidden" name="commandName" value="<%= cmd.name %>">
+                                <input type="hidden" name="currentState" value="<%= isEnabled %>">
+                                <button type="submit" style="background: <%= isEnabled ? 'rgba(240, 71, 71, 0.1)' : 'rgba(67, 181, 129, 0.1)' %>; border: 1px solid <%= isEnabled ? '#f04747' : '#43b581' %>; color: <%= isEnabled ? '#f04747' : '#43b581' %>; padding: 5px 12px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; font-size: 11px;">
+                                    <%= isEnabled ? 'OFF' : 'ON' %>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+    function toggleTheme() {
+        let theme = document.documentElement.getAttribute('data-theme');
+        let newTheme = theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    function searchCmd() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let rows = document.querySelector('#cmdTable tbody').getElementsByTagName('tr');
+        for (let i = 0; i < rows.length; i++) {
+            let cmdName = rows[i].getElementsByTagName('td')[0].innerText;
+            let category = rows[i].getElementsByTagName('td')[1].innerText;
+            rows[i].style.display = (cmdName.toLowerCase().includes(input) || category.toLowerCase().includes(input)) ? "" : "none";
+        }
+    }
+    </script>
+</body>
+</html>
