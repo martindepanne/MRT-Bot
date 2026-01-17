@@ -41,31 +41,16 @@ export default {
 						.replace('{guild}', member.guild.name)
 						.replace('{count}', member.guild.memberCount);
 
-					const sent = await channel.send(content);
-					if (row.time > 0) setTimeout(() => sent.delete().catch(() => { }), row.time);
+					try {
+						const sent = await channel.send(content);
+						if (row.time > 0) {
+							setTimeout(() => sent.delete().catch(() => { }), row.time);
+						}
+					} catch (error) {
+						console.error("Erreur d'envoi POJ:", error);
+					}
 				}
 			});
-		});
-
-		db.get('SELECT * FROM poj WHERE guildId = ?', [member.guild.id], async (err, row) => {
-			if (err || !row) return;
-
-			const channel = member.guild.channels.cache.get(row.channelId);
-			if (!channel) return;
-
-			let content = row.message
-				.replace('{user}', `<@${member.id}>`)
-				.replace('{guild}', member.guild.name)
-				.replace('{count}', member.guild.memberCount);
-
-			try {
-				const sentMessage = await channel.send(content);
-				if (row.time > 0) {
-					setTimeout(() => sentMessage.delete().catch(() => { }), row.time);
-				}
-			} catch (error) {
-				console.error("Erreur POJ:", error);
-			}
 		});
 
 		db.get('SELECT id, texte FROM soutien WHERE guild = ?', [member.guild.id], async (err, row) => {
