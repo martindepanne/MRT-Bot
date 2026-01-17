@@ -30,16 +30,41 @@ export default {
 			}
 		});
 
-		db.get('SELECT antitoken FROM antiraid WHERE guild = ?', [member.guild.id], async (err, row) => {
-			if (err || !row?.antitoken) return;
-			const accountAgeMs = Date.now() - member.user.createdTimestamp;
-			const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
-			if (accountAgeMs < sevenDaysMs) {
-				try {
-					await member.kick('Compte trop récent - AntiToken');
-				} catch (error) {
-					console.error(`Impossible de kick ${member.user.tag} AntiToken:`, error);
+		db.all('SELECT * FROM poj WHERE guildId = ?', [member.guild.id], async (err, rows) => {
+			if (err || !rows || rows.length === 0) return;
+
+			rows.forEach(async (row) => {
+				const channel = member.guild.channels.cache.get(row.channelId);
+				if (channel) {
+					let content = row.message
+						.replace('{user}', `<@${member.id}>`)
+						.replace('{guild}', member.guild.name)
+						.replace('{count}', member.guild.memberCount);
+
+					const sent = await channel.send(content);
+					if (row.time > 0) setTimeout(() => sent.delete().catch(() => { }), row.time);
 				}
+			});
+		});
+
+		db.get('SELECT * FROM poj WHERE guildId = ?', [member.guild.id], async (err, row) => {
+			if (err || !row) return;
+
+			const channel = member.guild.channels.cache.get(row.channelId);
+			if (!channel) return;
+
+			let content = row.message
+				.replace('{user}', `<@${member.id}>`)
+				.replace('{guild}', member.guild.name)
+				.replace('{count}', member.guild.memberCount);
+
+			try {
+				const sentMessage = await channel.send(content);
+				if (row.time > 0) {
+					setTimeout(() => sentMessage.delete().catch(() => { }), row.time);
+				}
+			} catch (error) {
+				console.error("Erreur POJ:", error);
 			}
 		});
 
