@@ -36,7 +36,7 @@ async function addPanelLog(action) {
 }
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'Views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
