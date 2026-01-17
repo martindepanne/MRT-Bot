@@ -18,6 +18,7 @@ bot.commands = new Collection();
 bot.setMaxListeners(70);
 
 global.Discord = Discord;
+global.client = bot; 
 
 bot.on('ready', () => {
     console.log(`[INFO] > ${bot.user.tag} est connecté`);
