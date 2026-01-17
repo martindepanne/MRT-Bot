@@ -3,6 +3,9 @@
   "owners": ["689911388713517093"],
   "prefix": "+",
   "color": "#96480C",
+  "panelURL": "http://ton-ip-ou-localhost:3000",
+  "panelUser": "admin",
+  "panelPass": "1234",
   "geminiKey": "",
 
   "ticket": {
@@ -23,11 +26,6 @@
     "color": "#96480C",
     "image": "",
     "emoji": "✅"
-  },
-
-  "fivem": {
-    "id": "abcdefg",
-    "discord_link": "https://discord.gg/"
   },
 
   "vouch": {
