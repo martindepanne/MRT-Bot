@@ -24,7 +24,7 @@
 
 ## Installation
 1. Configurer le config.json / Gemini API : https://aistudio.google.com/api-keys
-2. Installer les dépendances, en ouvrant l'invité de commande
+2. Installer les dépendances, en ouvrant l'invite de commande
 ```bash
 npm install
 ```
