@@ -13,13 +13,12 @@ const categories = [
     'Jeux',
     'Films',
     'Utilitaires',
-    'Musique',
     'Modérations',
     'Gestions',
     'Antiraid',
-    'Logs',
     'Contact',
-    'Paramètres'
+    'Paramètres',
+    'FiveM'
 ];
 
 export const command = {
