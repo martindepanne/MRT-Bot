@@ -2,7 +2,7 @@ import { ActivityType, Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, Bu
 import axios from 'axios';
 import sqlite3 from 'sqlite3';
 
-const db = new sqlite3.Database('./database.sqlite');
+const db = new sqlite3.Database('../database.sqlite3');
 
 export default {
     name: Events.ClientReady, 
