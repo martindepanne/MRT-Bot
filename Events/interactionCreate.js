@@ -1,4 +1,4 @@
-import { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField, ChannelType } from 'discord.js';
 import Discord from "discord.js";
 import db from "./loadDatabase.js";
 import sendLog from './sendlog.js';
@@ -74,7 +74,7 @@ export default {
                         .setDescription(`**Salon :** ${channel}\n**Type :** ${label}\n**Utilisateur :** ${interaction.user.tag}`)
                         .setColor(config.color)
                         .setTimestamp();
-                    
+
                     sendLog(interaction.guild, logEmbed, 'ticketlog');
                     sendLog(interaction.guild, logEmbed, '📁・ticket-logs');
                 });
@@ -109,6 +109,62 @@ export default {
         }
 
         if (interaction.isButton()) {
+            
+            if (interaction.customId.startsWith('poj_')) {
+                if (!config.owners.includes(interaction.user.id)) {
+                    const checkWL = await new Promise(r => db.get('SELECT id FROM whitelist WHERE id = ?', [interaction.user.id], (err, row) => r(!!row)));
+                    if (!checkWL) return interaction.reply({ content: "❌ Vous n'avez pas la permission.", flags: 64 });
+                }
+
+                if (interaction.customId === 'poj_off') {
+                    db.run('DELETE FROM poj WHERE guildId = ?', [interaction.guild.id], () => {
+                        interaction.update({ content: "✅ Système POJ désactivé.", embeds: [], components: [] });
+                    });
+                }
+
+                if (interaction.customId === 'poj_test') {
+                    db.all('SELECT * FROM poj WHERE guildId = ?', [interaction.guild.id], (err, rows) => {
+                        if (!rows || rows.length === 0) return interaction.reply({ content: "Aucun salon configuré.", flags: 64 });
+                        rows.forEach(async (row) => {
+                            const channel = interaction.guild.channels.cache.get(row.channelId);
+                            if (channel) {
+                                let content = row.message.replace('{user}', `<@${interaction.user.id}>`).replace('{guild}', interaction.guild.name).replace('{count}', interaction.guild.memberCount);
+                                const sent = await channel.send(content);
+                                if (row.time > 0) setTimeout(() => sent.delete().catch(() => {}), row.time);
+                            }
+                        });
+                        interaction.reply({ content: "✅ Test effectué.", flags: 64 });
+                    });
+                }
+
+                if (interaction.customId === 'poj_add') {
+                    const modal = new ModalBuilder().setCustomId('modal_poj_add').setTitle('Ajouter un salon POJ');
+                    const input = new TextInputBuilder().setCustomId('chan_id').setLabel("ID ou Mention du salon").setStyle(TextInputStyle.Short).setRequired(true);
+                    modal.addComponents(new ActionRowBuilder().addComponents(input));
+                    return interaction.showModal(modal);
+                }
+
+                if (interaction.customId === 'poj_del') {
+                    const modal = new ModalBuilder().setCustomId('modal_poj_del').setTitle('Supprimer un salon POJ');
+                    const input = new TextInputBuilder().setCustomId('chan_id').setLabel("ID du salon à retirer").setStyle(TextInputStyle.Short).setRequired(true);
+                    modal.addComponents(new ActionRowBuilder().addComponents(input));
+                    return interaction.showModal(modal);
+                }
+
+                if (interaction.customId === 'poj_edit_msg') {
+                    const modal = new ModalBuilder().setCustomId('modal_poj_msg').setTitle('Message POJ');
+                    const input = new TextInputBuilder().setCustomId('new_msg').setLabel("Message ({user}, {guild}, {count})").setStyle(TextInputStyle.Paragraph).setRequired(true);
+                    modal.addComponents(new ActionRowBuilder().addComponents(input));
+                    return interaction.showModal(modal);
+                }
+
+                if (interaction.customId === 'poj_edit_time') {
+                    const modal = new ModalBuilder().setCustomId('modal_poj_time').setTitle('Temps POJ');
+                    const input = new TextInputBuilder().setCustomId('new_time').setLabel("Secondes avant suppression").setStyle(TextInputStyle.Short).setRequired(true);
+                    modal.addComponents(new ActionRowBuilder().addComponents(input));
+                    return interaction.showModal(modal);
+                }
+            }
 
             if (interaction.customId === 'cbutton') {
                 db.get('SELECT id FROM captcha WHERE guild = ?', [interaction.guild.id], async (err, row) => {
@@ -127,6 +183,41 @@ export default {
                 return;
             }
 
+            if (interaction.customId === 'open_vouch_modal') {
+                const modal = new ModalBuilder()
+                    .setCustomId('vouch_modal')
+                    .setTitle('Votre avis');
+
+                const serviceInput = new TextInputBuilder()
+                    .setCustomId('vouch_service')
+                    .setLabel("Service")
+                    .setPlaceholder("Ex: Configuration Bot, Logo...")
+                    .setStyle(TextInputStyle.Short)
+                    .setRequired(true);
+
+                const noteInput = new TextInputBuilder()
+                    .setCustomId('vouch_note')
+                    .setLabel("Note (1 à 5)")
+                    .setPlaceholder("Ex: 5/5")
+                    .setMaxLength(5)
+                    .setStyle(TextInputStyle.Short)
+                    .setRequired(true);
+
+                const avisInput = new TextInputBuilder()
+                    .setCustomId('vouch_avis')
+                    .setLabel("Votre avis détaillé")
+                    .setStyle(TextInputStyle.Paragraph)
+                    .setRequired(true);
+
+                modal.addComponents(
+                    new ActionRowBuilder().addComponents(serviceInput),
+                    new ActionRowBuilder().addComponents(noteInput),
+                    new ActionRowBuilder().addComponents(avisInput)
+                );
+
+                return interaction.showModal(modal);
+            }
+
             if (interaction.customId === 'ticket_close') {
                 await interaction.reply({ content: "Génération du transcript et fermeture...", flags: Discord.MessageFlags.Ephemeral });
 
@@ -143,11 +234,11 @@ export default {
                     .setTimestamp();
 
                 try {
-                    await interaction.user.send({ 
-                        content: `Voici le transcript de votre ticket sur **${interaction.guild.name}**`, 
-                        files: [attachment] 
-                    }).catch(() => {});
-                } catch (e) {}
+                    await interaction.user.send({
+                        content: `Voici le transcript de votre ticket sur **${interaction.guild.name}**`,
+                        files: [attachment]
+                    }).catch(() => { });
+                } catch (e) { }
 
                 db.get('SELECT channels FROM logs WHERE guild = ?', [interaction.guild.id], (err, row) => {
                     if (row) {
@@ -159,7 +250,7 @@ export default {
                 });
 
                 db.run('DELETE FROM ticketchannel WHERE channelId = ?', [interaction.channel.id]);
-                setTimeout(() => interaction.channel.delete().catch(() => {}), 5000);
+                setTimeout(() => interaction.channel.delete().catch(() => { }), 5000);
             }
 
             if (interaction.customId === 'ticket_rename') {
@@ -232,7 +323,7 @@ export default {
             }
 
             if (interaction.customId === 'why_verify') return interaction.reply({ content: "Vérification anti-raid.", flags: 64 });
-            
+
             if (interaction.customId === 'confess_open') {
                 const modal = new ModalBuilder().setCustomId('confess_modal').setTitle('Confession');
                 modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('confess_text').setLabel('Ta confession').setStyle(TextInputStyle.Paragraph).setRequired(true)));
@@ -247,12 +338,45 @@ export default {
         }
 
         if (interaction.isModalSubmit()) {
+            
+            if (interaction.customId === 'modal_poj_add') {
+                let id = interaction.fields.getTextInputValue('chan_id').replace(/[<#>]/g, '');
+                db.get('SELECT message, time FROM poj WHERE guildId = ? LIMIT 1', [interaction.guild.id], (err, row) => {
+                    db.run('INSERT OR REPLACE INTO poj (guildId, channelId, message, time) VALUES (?, ?, ?, ?)', 
+                    [interaction.guild.id, id, row?.message || "{user}", row?.time || 5000], () => {
+                        interaction.reply({ content: `✅ Salon <#${id}> ajouté au POJ.`, flags: 64 });
+                    });
+                });
+            }
+
+            if (interaction.customId === 'modal_poj_del') {
+                let id = interaction.fields.getTextInputValue('chan_id').replace(/[<#>]/g, '');
+                db.run('DELETE FROM poj WHERE guildId = ? AND channelId = ?', [interaction.guild.id, id], function() {
+                    interaction.reply({ content: this.changes > 0 ? `✅ Salon <#${id}> retiré.` : "❌ Salon non trouvé.", flags: 64 });
+                });
+            }
+
+            if (interaction.customId === 'modal_poj_msg') {
+                const msg = interaction.fields.getTextInputValue('new_msg');
+                db.run('UPDATE poj SET message = ? WHERE guildId = ?', [msg, interaction.guild.id], () => {
+                    interaction.reply({ content: `✅ Message mis à jour pour tous les salons.`, flags: 64 });
+                });
+            }
+
+            if (interaction.customId === 'modal_poj_time') {
+                const time = parseInt(interaction.fields.getTextInputValue('new_time'));
+                if (isNaN(time)) return interaction.reply({ content: "Veuillez entrer un nombre.", flags: 64 });
+                db.run('UPDATE poj SET time = ? WHERE guildId = ?', [time * 1000, interaction.guild.id], () => {
+                    interaction.reply({ content: `✅ Suppression réglée sur ${time}s.`, flags: 64 });
+                });
+            }
+
             if (interaction.customId === 'modal_ticket_rename') {
                 const newName = interaction.fields.getTextInputValue('new_name');
                 const oldName = interaction.channel.name;
-                
-                await interaction.channel.setName(newName).catch(() => {});
-                
+
+                await interaction.channel.setName(newName).catch(() => { });
+
                 const logEmbed = new EmbedBuilder()
                     .setTitle("Ticket Renommé")
                     .setDescription(`<@${interaction.user.id}> a renommé le ticket via le bouton.`)
@@ -262,10 +386,10 @@ export default {
                     )
                     .setColor(config.color)
                     .setTimestamp();
-                
+
                 sendLog(interaction.guild, logEmbed, 'ticketlog');
                 sendLog(interaction.guild, logEmbed, '📁・ticket-logs');
-                
+
                 return interaction.reply({ content: `✅ Salon renommé : ${newName}`, flags: 64 });
             }
 
@@ -289,6 +413,44 @@ export default {
                 await interaction.reply({ content: "Embed généré avec succès.", flags: 64 });
                 return await interaction.channel.send({ embeds: [embed], components: [row] });
             }
+
+            if (interaction.customId === 'vouch_modal') {
+                const service = interaction.fields.getTextInputValue('vouch_service');
+                const note = interaction.fields.getTextInputValue('vouch_note');
+                const avis = interaction.fields.getTextInputValue('vouch_avis');
+                const guildId = interaction.guild.id;
+
+                db.get('SELECT total FROM vouch WHERE guild = ?', [guildId], async (err, row) => {
+                    const total = row ? row.total + 1 : 1;
+
+                    db.run(`INSERT OR REPLACE INTO vouch (guild, total) VALUES (?, ?)`, [guildId, total], async (err) => {
+                        if (err) return console.error(err);
+
+                        const embed = new EmbedBuilder()
+                            .setTitle(`#${total} Vouch`)
+                            .setDescription(`<@${interaction.user.id}> a laissé un avis !`)
+                            .addFields(
+                                { name: '🛠️ Service', value: service, inline: true },
+                                { name: '⭐ Note', value: note, inline: true },
+                                { name: '💬 Avis', value: avis, inline: false }
+                            )
+                            .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                            .setTimestamp()
+                            .setColor(config.color);
+
+                        const logChannel = interaction.guild.channels.cache.get(config.vouchChannel);
+
+                        if (logChannel) {
+                            await logChannel.send({ embeds: [embed] });
+                            await interaction.reply({ content: `✅ Merci ! Votre avis a été publié dans ${logChannel}.`, flags: 64 });
+                        } else {
+                            await interaction.reply({ content: "✅ Merci ! (Note: Salon de vouch non configuré ou introuvable).", flags: 64 });
+                            await interaction.channel.send({ embeds: [embed] });
+                        }
+                    });
+                });
+            }
+
 
             if (interaction.customId === 'confess_modal') {
                 const text = interaction.fields.getTextInputValue('confess_text');
