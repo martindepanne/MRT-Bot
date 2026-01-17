@@ -3,6 +3,7 @@
 ## Fonctionnalités
 - Discord.js V14 
 - Database
+- Panel Web
 - Antiraid
 - Contact
 - Gestion
