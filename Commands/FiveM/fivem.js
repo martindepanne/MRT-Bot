@@ -22,8 +22,8 @@ export const command = {
             return message.reply("Vous n'avez pas la permission d'utiliser cette commande.").then(m => setTimeout(() => m.delete().catch(() => { }), 3000));
         }
 
-        const cfxId = args[0] || config.fivem_id;
-        const discordLink = config.discord_link || "https://discord.gg/";
+        const cfxId = args[0];
+        const discordLink = "https://discord.gg/";
 
         if (!cfxId) return message.reply("`❌` Aucun ID FiveM trouvé (utilisez `fivem [ID]`).");
 
