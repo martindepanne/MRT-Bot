@@ -17,7 +17,7 @@ const bot = new Discord.Client({
 });
 
 bot.commands = new Discord.Collection();
-bot.slashCommands = new Discord.Collection();
+// bot.slashCommands = new Discord.Collection();
 bot.setMaxListeners(70);
 
 
@@ -66,7 +66,7 @@ bot.giveawaysManager.on('giveawayEnded', async (giveaway, winners) => {
 });
 
 const commandHandler = (await import('./Handler/Commands.js')).default(bot);
-const slashcommandHandler = (await import('./Handler/slashCommands.js')).default(bot);
+// const slashcommandHandler = (await import('./Handler/slashCommands.js')).default(bot);
 const eventdHandler = (await import('./Handler/Events.js')).default(bot);
 const anticrashHandler = (await import('./Handler/anticrash.js')).default;
 anticrashHandler(bot);
