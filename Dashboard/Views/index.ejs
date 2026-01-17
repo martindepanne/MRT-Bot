@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>MRT-Bot | Dashboard</title>
@@ -9,8 +10,6 @@
             --success: #43b581;
             --danger: #f04747;
             --warning: #faa61a;
-            
-            /* Dark Mode (Valeurs par défaut) */
             --bg-main: #36393f;
             --bg-card: #2f3136;
             --bg-header: #202225;
@@ -18,6 +17,7 @@
             --text-muted: #b9bbbe;
             --border-color: #202225;
             --input-bg: #202225;
+            --vscode-bg: #1e1e1e;
         }
 
         [data-theme="light"] {
@@ -28,186 +28,422 @@
             --text-muted: #4f5660;
             --border-color: #e3e5e8;
             --input-bg: #e3e5e8;
+            --vscode-bg: #f3f3f3;
         }
 
-        body { 
-            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-            background: var(--bg-main); 
-            color: var(--text-primary); 
-            padding: 40px; 
-            margin: 0; 
-            transition: background 0.2s, color 0.2s;
+        body {
+            font-family: sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            padding: 40px;
+            margin: 0;
         }
 
-        .container { max-width: 1100px; margin: auto; }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
 
-        .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px; 
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
             background: var(--bg-header);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .header-right { display: flex; align-items: center; gap: 15px; }
-
-        h2 { color: var(--text-primary); margin-top: 40px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
-
-        .module-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-            gap: 15px; 
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
-        .card { 
-            background: var(--bg-card); 
-            padding: 20px; 
-            border-radius: 8px; 
-            border-bottom: 3px solid var(--blurple);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: background 0.2s;
+        .stat-card {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+            border-top: 3px solid var(--blurple);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-toggle { 
-            border: none; 
-            padding: 10px; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            color: white; 
-            font-weight: 500; 
-            width: 100%; 
-            margin-top: 15px;
+        .stat-card span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
         }
 
-        #theme-btn {
-            background: var(--blurple);
+        .stat-card strong {
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+
+        .stat-icon-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            background: #202225;
+            object-fit: cover;
+        }
+
+        .btn-action {
             border: none;
             color: white;
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            font-size: 12px;
         }
 
-        #searchInput { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 20px 0; 
-            border-radius: 4px; 
-            border: 1px solid var(--border-color); 
-            background: var(--input-bg); 
-            color: var(--text-primary); 
-            box-sizing: border-box;
+        .system-bar {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            border-bottom: 3px solid var(--blurple);
+        }
+
+        .btn-toggle {
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
             outline: none;
+            box-sizing: border-box;
         }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
-        tr { background: var(--bg-card); transition: background 0.2s; }
-        th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; padding: 10px 15px; text-align: left; }
-        td { padding: 15px; }
-        td:first-child { border-radius: 8px 0 0 8px; }
-        td:last-child { border-radius: 0 8px 8px 0; }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 5px;
+        }
 
-        .badge { background: var(--bg-header); padding: 4px 10px; border-radius: 4px; font-size: 11px; color: var(--blurple); font-weight: bold; }
+        tr {
+            background: var(--bg-card);
+        }
 
-        .logout-btn { background: var(--danger); color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: bold; }
+        td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: var(--vscode-bg);
+            margin: 2% auto;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+
+        .vscode-header {
+            background: #323233;
+            color: #ccc;
+            padding: 10px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vscode-editor {
+            width: 100%;
+            height: 500px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            resize: none;
+        }
+
+        .console-box {
+            background: #1a1a1a;
+            color: #5865F2;
+            font-family: 'Consolas', monospace;
+            padding: 15px;
+            border-radius: 8px;
+            height: 180px;
+            overflow-y: auto;
+            font-size: 12px;
+            margin-top: 30px;
+            border: 1px solid #333;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>MRT-Bot Dashboard</h1>
-            <div class="header-right">
-                <button id="theme-btn" onclick="toggleTheme()">🌓 Thème</button>
-                <a href="/login" class="logout-btn">Déconnexion</a>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-action" style="background: var(--blurple)" onclick="toggleTheme()">🌓 Thème</button>
+                <a href="/login" class="btn-action"
+                    style="background: var(--danger); text-decoration: none;">Déconnexion</a>
             </div>
         </div>
 
-        <h2>⚙️ Modules du Bot</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span>📡 Latence</span>
+                <strong id="stat-ping"><%= stats.ping %>ms</strong>
+            </div>
+            <div class="stat-card">
+                <img id="stat-icon" class="stat-icon-img" src="" style="display: none;">
+                <span>🌐 Serveur</span>
+                <strong id="stat-name"><%= stats.serverName %></strong>
+            </div>
+            <div class="stat-card">
+                <span>👥 Membres</span>
+                <strong id="stat-users"><%= stats.users %></strong>
+            </div>
+            <div class="stat-card">
+                <span>💾 RAM</span>
+                <strong id="stat-ram"><%= stats.ram %> MB</strong>
+            </div>
+        </div>
+
+        <div class="system-bar">
+            <strong>📦 Système :</strong>
+            <button class="btn-action" style="background: var(--warning); color: #000;"
+                onclick="openEditor('config.json', true)">🛠️ Config</button>
+            <button class="btn-action" style="background: var(--success);" onclick="openSqlBrowser()">📂 Explorer
+                SQLite</button>
+            <a href="/download-db" class="btn-action" style="background: #4e5058; text-decoration: none;">💾 DB
+                Backup</a>
+        </div>
+
+        <h2>⚙️ Modules</h2>
         <div class="module-grid">
-            <% const availableModules = ['Informations', 'Jeux', 'Films', 'Utilitaires', 'Modérations', 'Gestions', 'Antiraid', 'Contact', 'Paramètres', 'FiveM']; %>
-            <% availableModules.forEach(name => { %>
-                <% const mod = modules.find(m => m.moduleName === name); %>
-                <% const isEnabled = mod ? mod.enabled : 1; %>
+            <% availableModules=['Informations', 'Jeux' , 'Films' , 'Utilitaires' , 'Modérations' , 'Gestions', 'Antiraid' , 'Contact' , 'Paramètres' , 'FiveM' ]; %>
+            <% availableModules.forEach(name=> { %>
+                <% const mod=modules.find(m=> m.moduleName === name); const isEnabled = mod ? mod.enabled : 1; %>
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <strong><%= name %></strong>
-                        <span style="font-size: 11px; font-weight: bold; color: <%= isEnabled ? '#43b581' : '#f04747' %>">
-                            ● <%= isEnabled ? 'ACTIF' : 'OFF' %>
-                        </span>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong><%= name %></strong> 
+                        <span style="color: <%= isEnabled ? '#43b581' : '#f04747' %>; font-size: 11px;">● <%= isEnabled ? 'Allumer' : 'Éteindre' %></span>
                     </div>
                     <form action="/toggle-module" method="POST">
                         <input type="hidden" name="moduleName" value="<%= name %>">
                         <input type="hidden" name="currentState" value="<%= isEnabled %>">
                         <button type="submit" class="btn-toggle" style="background: <%= isEnabled ? '#f04747' : '#43b581' %>">
-                            <%= isEnabled ? 'Désactiver' : 'Activer' %>
+                            <%= isEnabled ? 'Éteindre' : 'Allumer' %>
                         </button>
                     </form>
                 </div>
             <% }); %>
         </div>
 
-        <h2>📚 Liste des Commandes</h2>
-        <input type="text" id="searchInput" onkeyup="searchCmd()" placeholder="Rechercher une commande ou un module..." autofocus>
-
+        <h2>📚 Commandes</h2>
+        <input type="text" id="searchInput" onkeyup="searchCmd()" placeholder="Rechercher une commande...">
         <table id="cmdTable">
-            <thead>
-                <tr>
-                    <th>Commande</th>
-                    <th>Catégorie</th>
-                    <th>Description</th>
-                    <th>État</th>
-                </tr>
-            </thead>
             <tbody>
-                <% allCommands.forEach(cmd => { %>
-                    <% const status = cmdStatus.find(s => s.commandName === cmd.name); %>
-                    <% const isEnabled = status ? status.enabled : 1; %>
+                <% allCommands.forEach(cmd=> { %>
+                    <% const status=cmdStatus.find(s=> s.commandName === cmd.name); const isEnabled = status ? status.enabled : 1; %>
                     <tr>
                         <td><strong style="color: var(--warning);">+<%= cmd.name %></strong></td>
-                        <td><span class="badge"><%= cmd.category %></span></td>
-                        <td style="font-size: 13px; color: var(--text-muted);"><%= cmd.description %></td>
-                        <td>
-                            <form action="/toggle-command" method="POST">
-                                <input type="hidden" name="commandName" value="<%= cmd.name %>">
-                                <input type="hidden" name="currentState" value="<%= isEnabled %>">
-                                <button type="submit" style="background: <%= isEnabled ? 'rgba(240, 71, 71, 0.1)' : 'rgba(67, 181, 129, 0.1)' %>; border: 1px solid <%= isEnabled ? '#f04747' : '#43b581' %>; color: <%= isEnabled ? '#f04747' : '#43b581' %>; padding: 5px 12px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; font-size: 11px;">
-                                    <%= isEnabled ? 'OFF' : 'ON' %>
-                                </button>
-                            </form>
+                        <td><span style="background:rgba(88,101,242,0.1); color:var(--blurple); padding:4px 8px; border-radius:4px;"><%= cmd.category %></span></td>
+                        <td align="right">
+                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <button class="btn-action" style="background: #4e5058" onclick="openEditor('<%= cmd.name %>')">📝 Modifier</button>
+                                <form action="/toggle-command" method="POST" style="margin:0;">
+                                    <input type="hidden" name="commandName" value="<%= cmd.name %>">
+                                    <input type="hidden" name="currentState" value="<%= isEnabled %>">
+                                    <button type="submit" style="background: <%= isEnabled ? '#f04747' : '#43b581' %>; border:none; color:white; padding:5px 12px; border-radius:4px; cursor:pointer;">
+                                        <%= isEnabled ? 'Éteindre' : 'Allumer' %>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 <% }); %>
             </tbody>
         </table>
+
+        <h2>🛠️ Logs du Panel</h2>
+        <div id="panelLogsBox" class="console-box">En attente d'actions...</div>
+    </div>
+
+    <div id="editorModal" class="modal">
+        <div class="modal-content">
+            <div class="vscode-header"><span id="fileNameDisplay">script.js</span><span onclick="closeEditor()" style="cursor:pointer">✖</span></div>
+            <textarea id="codeEditor" class="vscode-editor" spellcheck="false"></textarea>
+            <div style="padding: 10px; background: #252526; display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-action" style="background:#444" onclick="closeEditor()">Annuler</button>
+                <button class="btn-action" style="background:#007acc" onclick="saveCode()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sqlModal" class="modal">
+        <div class="modal-content" style="max-width: 1100px; height: 85vh; display: flex; flex-direction: column;">
+            <div class="vscode-header"><span>Browser SQLite</span><span onclick="closeSqlBrowser()" style="cursor:pointer">✖</span></div>
+            <div style="display: flex; flex: 1; overflow: hidden;">
+                <div id="tableList" style="width: 200px; background: #252526; border-right: 1px solid #444; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;"></div>
+                <div style="flex: 1; display: flex; flex-direction: column; padding: 15px; background: #1e1e1e; overflow: hidden;">
+                    <textarea id="sqlQueryInput" style="width: 100%; height: 80px; background: #2d2d2d; color: #9cdcfe; border: 1px solid #444; padding: 10px; font-family: monospace;"></textarea>
+                    <button class="btn-action" style="background: var(--blurple); margin: 10px 0; width: fit-content;" onclick="runSqlQuery()">Exécuter</button>
+                    <div id="sqlResult" style="flex: 1; overflow: auto; background: #1a1a1a; border: 1px solid #333; font-size: 13px;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', currentTheme);
+        let currentEditingFile = "";
 
-    function toggleTheme() {
-        let theme = document.documentElement.getAttribute('data-theme');
-        let newTheme = theme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-    }
+        setInterval(async () => {
+            try {
+                const resStats = await fetch('/api/stats');
+                const dataStats = await resStats.json();
+                document.getElementById('stat-ping').innerText = dataStats.ping + "ms";
+                document.getElementById('stat-name').innerText = dataStats.serverName;
+                document.getElementById('stat-users').innerText = dataStats.users;
+                document.getElementById('stat-ram').innerText = dataStats.ram + " MB";
+                
+                const iconImg = document.getElementById('stat-icon');
+                if(dataStats.icon) {
+                    iconImg.src = dataStats.icon;
+                    iconImg.style.display = 'block';
+                } else {
+                    iconImg.style.display = 'none';
+                }
 
-    function searchCmd() {
-        let input = document.getElementById('searchInput').value.toLowerCase();
-        let rows = document.querySelector('#cmdTable tbody').getElementsByTagName('tr');
-        for (let i = 0; i < rows.length; i++) {
-            let cmdName = rows[i].getElementsByTagName('td')[0].innerText;
-            let category = rows[i].getElementsByTagName('td')[1].innerText;
-            rows[i].style.display = (cmdName.toLowerCase().includes(input) || category.toLowerCase().includes(input)) ? "" : "none";
+                const resLogs = await fetch('/get-panel-logs');
+                const dataLogs = await resLogs.json();
+                const logBox = document.getElementById('panelLogsBox');
+                if (dataLogs.logs.length > 0) {
+                    logBox.innerHTML = dataLogs.logs.join('<br>');
+                    logBox.scrollTop = logBox.scrollHeight;
+                }
+            } catch (e) { }
+        }, 3000);
+
+        function searchCmd() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let rows = document.querySelectorAll('#cmdTable tbody tr');
+            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(input) ? "" : "none");
         }
-    }
+
+        async function openEditor(name, isRaw = false) {
+            currentEditingFile = name;
+            document.getElementById('fileNameDisplay').innerText = name + (isRaw ? "" : ".js") + " — Editeur";
+            document.getElementById('editorModal').style.display = 'block';
+            const res = await fetch('/get-script/' + name);
+            const data = await res.json();
+            document.getElementById('codeEditor').value = data.content || data.error;
+        }
+
+        async function saveCode() {
+            const content = document.getElementById('codeEditor').value;
+            const res = await fetch('/save-script', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fileName: currentEditingFile, content })
+            });
+            if ((await res.json()).success) { alert("Enregistré !"); closeEditor(); }
+        }
+
+        async function openSqlBrowser() {
+            document.getElementById('sqlModal').style.display = 'block';
+            const res = await fetch('/sql-tables');
+            const tables = await res.json();
+            const list = document.getElementById('tableList');
+            list.innerHTML = '';
+            tables.forEach(t => {
+                const b = document.createElement('button');
+                b.innerText = t; b.style = "background:none; border:none; color:#ddd; text-align:left; cursor:pointer; padding:8px; font-size:13px; border-radius:4px;";
+                b.onclick = () => { document.getElementById('sqlQueryInput').value = `SELECT * FROM ${t} LIMIT 100`; runSqlQuery(); };
+                list.appendChild(b);
+            });
+        }
+
+        async function runSqlQuery() {
+            const query = document.getElementById('sqlQueryInput').value;
+            const res = await fetch('/sql-query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+            const data = await res.json();
+            const resultDiv = document.getElementById('sqlResult');
+            if (data.type === 'data' && data.rows.length > 0) {
+                let h = '<table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#333;">';
+                Object.keys(data.rows[0]).forEach(k => h += `<th style="padding:10px; border:1px solid #444;">${k}</th>`);
+                h += '</tr></thead><tbody>';
+                data.rows.forEach(r => { h += '<tr>'; Object.values(r).forEach(v => h += `<td style="padding:10px; border:1px solid #444;">${v}</td>`); h += '</tr>'; });
+                resultDiv.innerHTML = h + '</tbody></table>';
+            } else { resultDiv.innerHTML = `<p style="padding:15px;">${data.message || data.error || "Terminé."}</p>`; }
+        }
+
+        function closeEditor() { document.getElementById('editorModal').style.display = 'none'; }
+        function closeSqlBrowser() { document.getElementById('sqlModal').style.display = 'none'; }
+        function toggleTheme() {
+            let t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('theme', t);
+        }
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
     </script>
 </body>
+
 </html>
