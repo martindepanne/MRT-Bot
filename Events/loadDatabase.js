@@ -41,6 +41,7 @@ const dbcreate = () => {
             `CREATE TABLE IF NOT EXISTS tempvoc_channels (channelId TEXT PRIMARY KEY, guildId TEXT)`,
             `CREATE TABLE IF NOT EXISTS ticketchannel (channelId TEXT PRIMARY KEY, userId TEXT)`,
             `CREATE TABLE IF NOT EXISTS fivem_status (guildId TEXT PRIMARY KEY, channelId TEXT, messageId TEXT, cfxId TEXT)`,
+            `CREATE TABLE IF NOT EXISTS poj (guildId TEXT, channelId TEXT, message TEXT DEFAULT '{user}', time INTEGER DEFAULT 5000, PRIMARY KEY (guildId, channelId))`,
             `CREATE TABLE IF NOT EXISTS antiraid (
                 guild TEXT PRIMARY KEY, 
                 antilink INTEGER DEFAULT 0, 
@@ -66,7 +67,7 @@ const dbcreate = () => {
                 p4_wins INTEGER DEFAULT 0,
                 ttt_wins INTEGER DEFAULT 0,
                 dames_wins INTEGER DEFAULT 0
-            )`, 
+            )`,
             `CREATE TABLE IF NOT EXISTS movies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT,
@@ -79,12 +80,22 @@ const dbcreate = () => {
                 guildId TEXT PRIMARY KEY,
                 roleId TEXT
                 )`
-            
-            
         ];
 
         queries.forEach(query => {
             db.run(query);
+        });
+
+        db.run("ALTER TABLE poj ADD COLUMN message TEXT DEFAULT '{user}'", (err) => {
+            if (err && !err.message.includes("duplicate column name")) {
+                console.error("Erreur migration POJ (message):", err.message);
+            }
+        });
+
+        db.run("ALTER TABLE poj ADD COLUMN time INTEGER DEFAULT 5000", (err) => {
+            if (err && !err.message.includes("duplicate column name")) {
+                console.error("Erreur migration POJ (time):", err.message);
+            }
         });
     });
 };
