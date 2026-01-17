@@ -2,6 +2,7 @@ import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "disc
 
 export const command = {
     name: 'verify',
+    description: 'Mise en place d\'une vérification OAuth2',
     run: async (bot, message, args, config) => {
         const embed = new EmbedBuilder()
             .setTitle("Configuration de la Vérification OAuth2")
