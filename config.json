@@ -6,6 +6,8 @@
   "panelURL": "http://ton-ip-ou-localhost:3000",
   "panelUser": "admin",
   "panelPass": "1234",
+  "panelLogs": "https://discord.com/api/webhooks/",
+  "panelGuildId": "TON_ID_DE_SERVEUR_ICI",
   "geminiKey": "",
 
   "ticket": {
