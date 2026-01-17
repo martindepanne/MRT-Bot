@@ -41,6 +41,20 @@ node --no-deprecation index.js
 
 Pour mettre à jour, il suffit de conserver la database et la config puis de les glisser dans un dossier à jour ( sauf quand le config est mis à jour)
 
+## HEBERGEUR
+
+remplacer dans Events/loadDatabase.js
+```
+const dbPath = path.join(__dirname, '../database.sqlite3');
+```
+Par
+```
+const dbPath = path.join(process.cwd(), 'database.sqlite3');
+```
+Et remplacer le fichier Dashboard/server.js par Dashboard/hebergeurserver.js
+Puis remettez lui le nom server.js
+
+
 ## Crédit
 - Martin Dépanne (([Discord](https://guns.lol/martindepanne)/([Github](https://github.com/martindepanne))))
 - Rework du bot de 4wip
