@@ -38,7 +38,7 @@ node --no-deprecation index.js
 
 ## MAJS
 
-Pour mettre à jour, il suffit de conserver la database et la config puis de les glisser dans un dossier à jour
+Pour mettre à jour, il suffit de conserver la database et la config puis de les glisser dans un dossier à jour ( sauf quand le config est mis à jour)
 
 ## Crédit
 - Martin Dépanne (([Discord](https://guns.lol/martindepanne)/([Github](https://github.com/martindepanne))))
