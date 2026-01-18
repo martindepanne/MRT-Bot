@@ -36,7 +36,7 @@ async function addPanelLog(action) {
 }
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'Views'));
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -65,16 +65,28 @@ function checkAuth(req, res, next) {
     res.redirect('/login');
 }
 
-app.get('/login', (req, res) => { res.render('login', { error: null }); });
+app.get('/login', (req, res) => {
+    const guild = client.guilds.cache.get(config.panelGuildId);
+    const stats = {
+        serverName: guild ? guild.name : "Serveur Discord",
+        serverIcon: guild ? guild.iconURL({ extension: 'png', size: 512 }) : 'https://cdn.discordapp.com/embed/avatars/0.png'
+    };
+    res.render('login', { error: null, stats: stats });
+});
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
+    const guild = client.guilds.cache.get(config.panelGuildId);
+    const stats = {
+        serverName: guild ? guild.name : "Serveur Discord",
+        serverIcon: guild ? guild.iconURL({ extension: 'png', size: 512 }) : 'https://cdn.discordapp.com/embed/avatars/0.png'
+    };
+
     if (username === config.panelUser && password === config.panelPass) {
         req.session.loggedIn = true;
-        addPanelLog(`Connexion au dashboard`);
         res.redirect('/');
     } else {
-        res.render('login', { error: "Identifiants incorrects" });
+        res.render('login', { error: "Identifiants incorrects", stats: stats });
     }
 });
 
