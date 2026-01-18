@@ -26,6 +26,29 @@
             text-align: center;
         }
 
+        .stat-icon-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            background: #202225;
+            object-fit: cover;
+        }
+
+        .server-info {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .server-info span {
+            color: #b9bbbe;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
         h1 {
             font-size: 24px;
             margin-bottom: 8px;
@@ -77,11 +100,15 @@
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
         }
 
         button:hover {
             background-color: #4752c4;
+        }
+
+        button:active {
+            transform: scale(0.98);
         }
 
         .error-msg {
@@ -97,6 +124,11 @@
 <body>
 
     <div class="login-card">
+        <div class="server-info">
+            <img id="stat-icon" class="stat-icon-img" src="" style="display: none;">
+            <span id="stat-name">Chargement...</span>
+        </div>
+
         <h1>Content de vous revoir !</h1>
         <p>Connectez-vous pour gérer votre bot.</p>
 
@@ -121,5 +153,24 @@
         </form>
     </div>
 
+    <script>
+        async function loadServerInfo() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                
+                document.getElementById('stat-name').innerText = data.serverName;
+                
+                const iconImg = document.getElementById('stat-icon');
+                if(data.icon) {
+                    iconImg.src = data.icon;
+                    iconImg.style.display = 'block';
+                }
+            } catch (e) {
+                document.getElementById('stat-name').innerText = "Dashboard";
+            }
+        }
+        loadServerInfo();
+    </script>
 </body>
 </html>
