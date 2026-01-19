@@ -7,6 +7,7 @@ import axios from 'axios';
 import db from '../Events/loadDatabase.js';
 import { getAllCommands } from './utils.js';
 import config from "../config.json" with { type: 'json' };
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -87,7 +88,9 @@ app.post('/login', (req, res) => {
 
     if (username === config.panelUser && password === config.panelPass) {
         const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        db.run('INSERT INTO login_history (username, ip, timestamp) VALUES (?, ?, ?)', [username, userIP, Date.now()]);
+        db.run('CREATE TABLE IF NOT EXISTS login_history (username TEXT, ip TEXT, timestamp INTEGER)', () => {
+            db.run('INSERT INTO login_history (username, ip, timestamp) VALUES (?, ?, ?)', [username, userIP, Date.now()]);
+        });
         
         req.session.loggedIn = true;
         addPanelLog(`Connexion de ${username}`);
@@ -130,8 +133,25 @@ app.get('/api/stats', checkAuth, async (req, res) => {
         serverName: guild ? guild.name : "Serveur introuvable",
         users: guild ? guild.memberCount : 0,
         ram: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
-        icon: guild ? guild.iconURL({ dynamic: true, size: 64 }) : null
+        icon: guild ? guild.iconURL({ dynamic: true, size: 64 }) : null,
+        geminiKey: !!config.geminiKey
     });
+});
+
+app.post('/api/ai-generate', checkAuth, async (req, res) => {
+    const { prompt, code, fileName } = req.body;
+    if (!config.geminiKey) return res.status(400).json({ error: "Clé manquante" });
+
+    try {
+        const genAI = new GoogleGenerativeAI(config.geminiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent(`En tant qu'expert Discord.js, modifie ce code (${fileName}) selon : ${prompt}. Retourne UNIQUEMENT le code, sans texte ni balises markdown.\n\nCode actuel :\n${code}`);
+        const response = await result.response;
+        let newCode = response.text().replace(/```javascript/g, "").replace(/```/g, "").trim();
+        res.json({ newCode });
+    } catch (e) {
+        res.status(500).json({ error: "Erreur IA" });
+    }
 });
 
 app.get('/get-panel-logs', checkAuth, (req, res) => {
@@ -212,14 +232,14 @@ app.post('/toggle-command', checkAuth, (req, res) => {
 });
 
 export function startDashboard() {
-    let port = 3000;
+    let port = process.env.PORT || 3000;
     try {
         if (config.panelURL) {
             const url = new URL(config.panelURL);
             port = url.port || (url.protocol === 'https:' ? 443 : 80);
         }
     } catch(e) { 
-        port = 3000; 
+        port = process.env.PORT || 3000; 
     }
     app.listen(port, '0.0.0.0', () => { console.log(`[DASHBOARD] Prêt sur le port ${port}`); });
 }
