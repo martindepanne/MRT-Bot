@@ -72,8 +72,15 @@
         .edit-field label { display: block; color: #aaa; font-size: 12px; margin-bottom: 5px; }
         .edit-field input { width: 100%; padding: 8px; background: #1e1e1e; border: 1px solid #444; color: white; box-sizing: border-box; }
         .help-box { background: #2d2d2d; padding: 10px; border-radius: 4px; margin-top: 10px; border-left: 3px solid var(--blurple); font-size: 12px; color: #ccc; }
-        .ai-sidebar { width: 250px; background: #252526; border-left: 1px solid #444; display: flex; flex-direction: column; padding: 15px; }
-        .ai-input { background: #3c3c3c; border: 1px solid #555; color: white; padding: 8px; border-radius: 4px; resize: none; height: 100px; font-size: 12px; margin-bottom: 10px; }
+        
+        .ai-sidebar { width: 320px; background: #252526; border-left: 1px solid #444; display: flex; flex-direction: column; overflow: hidden; }
+        .ai-chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .ai-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; background: #1e1e1e; }
+        .msg { font-size: 12px; padding: 8px 12px; border-radius: 6px; max-width: 85%; line-height: 1.4; word-wrap: break-word; }
+        .msg.user { align-self: flex-end; background: var(--blurple); color: white; }
+        .msg.bot { align-self: flex-start; background: #333; color: #ddd; border: 1px solid #444; }
+        .ai-footer { padding: 10px; background: #2d2d2d; border-top: 1px solid #444; }
+        .ai-input { width: 100%; background: #3c3c3c; border: 1px solid #555; color: white; padding: 8px; border-radius: 4px; resize: none; font-size: 12px; box-sizing: border-box; outline: none; }
     </style>
 </head>
 
@@ -103,8 +110,8 @@
 
         <h2>⚙️ Modules</h2>
         <div class="module-grid">
-            <% availableModules=['Informations', 'Jeux' , 'Films' , 'Utilitaires' , 'Modérations' , 'Gestions', 'Antiraid' , 'Contact' , 'Paramètres' , 'FiveM' ]; %>
-            <% availableModules.forEach(name=> { %>
+            <% let avMods=['Informations', 'Jeux' , 'Films' , 'Utilitaires' , 'Modérations' , 'Gestions', 'Antiraid' , 'Contact' , 'Paramètres' , 'FiveM' ]; %>
+            <% avMods.forEach(name=> { %>
                 <% const mod=modules.find(m=> m.moduleName === name); const isEnabled = mod ? mod.enabled : 1; %>
                 <div class="card">
                     <div style="display: flex; justify-content: space-between;">
@@ -148,20 +155,21 @@
     </div>
 
     <div id="editorModal" class="modal">
-        <div class="modal-content" style="max-width: 1200px;">
+        <div class="modal-content" style="max-width: 1300px;">
             <div class="vscode-header">
                 <span id="fileNameDisplay">script.js</span>
                 <span id="aiStatus" style="font-size: 10px; color: var(--text-muted);"></span>
-                <span onclick="closeEditor()" style="cursor:pointer">✖</span>
+                <span onclick="closeEditor()" style="cursor:pointer; padding: 0 10px;">✖</span>
             </div>
             <div style="display: flex; height: 600px;">
                 <textarea id="codeEditor" class="vscode-editor" spellcheck="false" style="flex: 1;"></textarea>
-                <div id="aiSidebar" class="ai-sidebar">
-                    <strong style="font-size: 12px; color: var(--blurple); margin-bottom: 10px;">✨ Assistant IA</strong>
-                    <div id="aiContent">
-                        <textarea id="aiPrompt" class="ai-input" placeholder="Décris la modification à faire..."></textarea>
-                        <button class="btn-action" style="background: var(--blurple); width: 100%; justify-content: center;" onclick="askAI()">🚀 Générer</button>
-                        <p style="font-size: 10px; color: #888; margin-top: 10px;">L'IA modifiera directement le code ci-contre.</p>
+                <div class="ai-sidebar">
+                    <div id="aiContent" class="ai-chat-container">
+                        <div id="aiMessages" class="ai-messages"></div>
+                        <div class="ai-footer">
+                            <textarea id="aiPrompt" class="ai-input" placeholder="Poser une question ou demander une modif..." rows="3"></textarea>
+                            <button id="btnSendAI" class="btn-action" style="background: var(--blurple); width: 100%; justify-content: center; margin-top: 8px;" onclick="askAI()">Envoyer</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -182,8 +190,7 @@
                         <div style="display: flex; gap: 10px; align-items: flex-end;">
                             <div style="flex: 1;">
                                 <label style="display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">⚡ Exécuter une ligne SQL</label>
-                                <input type="text" id="quickSqlQuery" placeholder="Ex: UPDATE users SET money = 1000 WHERE userId = '123'" 
-                                       style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #333; color: #4ec9b0; font-family: 'Consolas', monospace; border-radius: 4px; outline: none;">
+                                <input type="text" id="quickSqlQuery" placeholder="Ex: UPDATE users SET money = 1000 WHERE userId = '123'" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #333; color: #4ec9b0; border-radius: 4px; outline: none;">
                             </div>
                             <button class="btn-action" style="background: var(--blurple); height: 34px;" onclick="executeQuickQuery()">▶️</button>
                         </div>
@@ -213,20 +220,13 @@
         <div class="modal-content" style="max-width: 550px; margin-top: 8%;">
             <div class="vscode-header"><span>➕ Créer une nouvelle table</span><span onclick="closeCreateModal()" style="cursor:pointer">✖</span></div>
             <div style="padding: 20px;">
-                <div class="edit-field">
-                    <label>Nom de la table</label>
-                    <input type="text" id="newTableName" placeholder="ex: economy">
-                </div>
-                <div class="edit-field">
-                    <label>Colonnes (Format SQL)</label>
-                    <input type="text" id="newTableCols" placeholder="id INTEGER PRIMARY KEY, userId TEXT, balance INT">
-                </div>
+                <div class="edit-field"><label>Nom de la table</label><input type="text" id="newTableName" placeholder="ex: economy"></div>
+                <div class="edit-field"><label>Colonnes (Format SQL)</label><input type="text" id="newTableCols" placeholder="id INTEGER PRIMARY KEY, userId TEXT, balance INT"></div>
                 <div class="help-box" style="line-height: 1.6;">
                     <strong style="color:var(--blurple); display: block; margin-bottom: 5px;">🌱 Guide pour débutants :</strong>
-                    • <code style="color:#ce9178">TEXT</code> : Pour du texte (ex: <b>pseudo</b>).<br>
-                    • <code style="color:#b5cea8">INTEGER</code> : Pour des nombres (ex: <b>argent</b>).<br>
-                    • <code style="color:#569cd6">PRIMARY KEY</code> : La clé unique (souvent sur l'<b>id</b>).<br>
-                    <span style="font-size: 11px; color: #888; display: block; margin-top: 5px;">💡 <i>Exemple : <code>userId TEXT PRIMARY KEY, money INTEGER</code></i></span>
+                    • <code style="color:#ce9178">TEXT</code> : Pour du texte.<br>
+                    • <code style="color:#b5cea8">INTEGER</code> : Pour des nombres.<br>
+                    • <code style="color:#569cd6">PRIMARY KEY</code> : La clé unique.
                 </div>
             </div>
             <div style="padding: 15px; background: #252526; display: flex; justify-content: flex-end; gap: 10px;">
@@ -240,7 +240,7 @@
         <div class="modal-content" style="max-width: 400px; margin-top: 15%;">
             <div class="vscode-header"><span>Confirmation</span><span onclick="closeConfirmModal()" style="cursor:pointer">✖</span></div>
             <div style="padding: 20px; text-align: center;">
-                <p id="confirmMessage">Voulez-vous vraiment effectuer cette action ?</p>
+                <p id="confirmMessage"></p>
                 <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
                     <button class="btn-action" style="background:#444" onclick="closeConfirmModal()">Annuler</button>
                     <button class="btn-action" style="background:var(--danger)" id="confirmBtn">Confirmer</button>
@@ -253,82 +253,14 @@
         let currentEditingFile = "";
         let currentOpenedTable = "";
         let hasGeminiKey = false;
+        let aiHistory = [];
         let editRowData = { table: "", idKey: "", idVal: "", columns: [] };
-
-        setInterval(async () => {
-            try {
-                const resStats = await fetch('/api/stats');
-                const dataStats = await resStats.json();
-                document.getElementById('stat-ping').innerText = dataStats.ping + "ms";
-                document.getElementById('stat-name').innerText = dataStats.serverName;
-                document.getElementById('stat-users').innerText = dataStats.users;
-                document.getElementById('stat-ram').innerText = dataStats.ram + " MB";
-                const iconImg = document.getElementById('stat-icon');
-                if (dataStats.icon) { iconImg.src = dataStats.icon; iconImg.style.display = 'block'; }
-
-                hasGeminiKey = !!dataStats.geminiKey;
-                const aiStatus = document.getElementById('aiStatus');
-                const aiContent = document.getElementById('aiContent');
-
-                if (!hasGeminiKey) {
-                    aiStatus.innerHTML = "<b class='alert-blink' style='font-size: 16px;'>⚠️ CLÉ GEMINI NON CONFIGURÉE</b>";
-                    aiStatus.style.color = "var(--danger)";
-                    
-                    if (aiContent && !aiContent.querySelector('.no-key-alert')) {
-                        aiContent.innerHTML = `
-                            <div class="no-key-alert" style="text-align:center; padding: 20px; border: 2px dashed var(--danger); border-radius: 8px; margin-top: 10px; background: rgba(240, 71, 71, 0.1);">
-                                <p style="color: var(--danger); font-weight: bold; font-size: 16px; margin-bottom: 10px;">ACCÈS IA REFUSÉ</p>
-                                <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
-                                    L'assistant est désactivé car aucune <b>geminiKey</b> n'a été trouvée dans votre <code>config.json</code>.
-                                </p>
-                                <button class="btn-action" style="background: var(--warning); color: #000; width: 100%; margin-top: 15px; justify-content: center;" onclick="openEditor('config.json', true)">Régler maintenant</button>
-                            </div>
-                        `;
-                    }
-                } else {
-                    aiStatus.innerText = "🟢 IA Prête";
-                    aiStatus.style.color = "var(--success)";
-                    aiStatus.classList.remove('alert-blink');
-
-                    if (aiContent && aiContent.querySelector('.no-key-alert')) {
-                        aiContent.innerHTML = `
-                            <textarea id="aiPrompt" class="ai-input" placeholder="Décris la modification à faire..."></textarea>
-                            <button class="btn-action" style="background: var(--blurple); width: 100%; justify-content: center;" onclick="askAI()">🚀 Générer</button>
-                            <p style="font-size: 10px; color: #888; margin-top: 10px;">L'IA modifiera directement le code ci-contre.</p>
-                        `;
-                    }
-                }
-
-                const resLogs = await fetch('/get-panel-logs');
-                const dataLogs = await resLogs.json();
-                const logBox = document.getElementById('panelLogsBox');
-                if (dataLogs.logs.length > 0) { logBox.innerHTML = dataLogs.logs.join('<br>'); logBox.scrollTop = logBox.scrollHeight; }
-            } catch (e) { }
-        }, 3000);
-
-        async function executeQuickQuery() {
-            const query = document.getElementById('quickSqlQuery').value.trim();
-            if (!query) return;
-            if (!confirm("Exécuter cette commande SQL ?")) return;
-            try {
-                const res = await fetch('/sql-query', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query })
-                });
-                const data = await res.json();
-                if (data.error) alert("Erreur: " + data.error);
-                else {
-                    alert("Succès !");
-                    document.getElementById('quickSqlQuery').value = "";
-                    if (currentOpenedTable) loadTableData(currentOpenedTable);
-                }
-            } catch (e) { alert("Erreur serveur"); }
-        }
 
         async function openEditor(name, isRaw = false) {
             currentEditingFile = name;
-            document.getElementById('fileNameDisplay').innerText = name + (isRaw ? "" : ".js") + " — Editeur";
+            aiHistory = [];
+            document.getElementById('aiMessages').innerHTML = `<div class="msg bot">Fichier <b>${name}</b> chargé. Comment puis-je vous aider ?</div>`;
+            document.getElementById('fileNameDisplay').innerText = name + (isRaw ? "" : ".js");
             document.getElementById('editorModal').style.display = 'block';
             const res = await fetch('/get-script/' + name);
             const data = await res.json();
@@ -336,25 +268,33 @@
         }
 
         async function askAI() {
-            if (!hasGeminiKey) return alert("Veuillez configurer votre clé Gemini d'abord.");
-            const prompt = document.getElementById('aiPrompt').value;
+            const promptInput = document.getElementById('aiPrompt');
+            const message = promptInput.value.trim();
             const currentCode = document.getElementById('codeEditor').value;
-            if (!prompt) return;
-            const btn = document.querySelector('.ai-sidebar .btn-action');
-            btn.innerText = "⌛ Analyse...";
+            const msgContainer = document.getElementById('aiMessages');
+            const btn = document.getElementById('btnSendAI');
+            if (!message || !hasGeminiKey) return;
+            msgContainer.innerHTML += `<div class="msg user">${message}</div>`;
+            promptInput.value = "";
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+            btn.disabled = true;
             try {
-                const res = await fetch('/api/ai-generate', {
+                const res = await fetch('/api/ai-chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, code: currentCode, fileName: currentEditingFile })
+                    body: JSON.stringify({ message, code: currentCode, fileName: currentEditingFile, history: aiHistory })
                 });
                 const data = await res.json();
+                aiHistory.push({ user: message, bot: data.reply });
+                if (aiHistory.length > 10) aiHistory.shift();
+                msgContainer.innerHTML += `<div class="msg bot">${data.reply}</div>`;
                 if (data.newCode) {
                     document.getElementById('codeEditor').value = data.newCode;
-                    document.getElementById('aiPrompt').value = "";
+                    msgContainer.innerHTML += `<div class="msg bot" style="font-style:italic; font-size:10px;">✨ Code mis à jour.</div>`;
                 }
-            } catch (e) { }
-            btn.innerText = "🚀 Générer";
+            } catch (e) { msgContainer.innerHTML += `<div class="msg bot" style="color:var(--danger)">Erreur IA.</div>`; }
+            btn.disabled = false;
+            msgContainer.scrollTop = msgContainer.scrollHeight;
         }
 
         async function saveCode() {
@@ -364,7 +304,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ fileName: currentEditingFile, content })
             });
-            if ((await res.json()).success) { closeEditor(); }
+            if ((await res.json()).success) closeEditor();
         }
 
         async function openSqlBrowser() {
@@ -378,7 +318,7 @@
                 container.style = "display:flex; justify-content:space-between; align-items:center; background:#2d2d2d; border-radius:4px; padding-right:5px; margin-bottom:5px;";
                 const b = document.createElement('button');
                 b.innerText = t; b.style = "background:none; border:none; color:#ddd; text-align:left; cursor:pointer; padding:8px; font-size:13px; flex:1;";
-                b.onclick = () => { loadTableData(t); };
+                b.onclick = () => loadTableData(t);
                 const del = document.createElement('button');
                 del.innerHTML = "🗑️"; del.style = "background:none; border:none; color:var(--danger); cursor:pointer;";
                 del.onclick = (e) => {
@@ -409,32 +349,22 @@
                 h += `</tr></thead><tbody>`;
                 data.rows.forEach(r => {
                     const rowJson = JSON.stringify(r).replace(/"/g, '&quot;');
-                    h += `<tr><td>
-                        <button class="action-icon" onclick="openEditModal('${tableName}', ${rowJson})">✏️</button>
-                        <button class="action-icon" style="color:var(--danger)" onclick="openConfirmModal('Supprimer cette ligne ?', async () => {
-                            const query = 'DELETE FROM ${tableName} WHERE ${columns[0]} = \\'${r[columns[0]]}\\'';
-                            await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) });
-                            loadTableData('${tableName}');
-                        })">🗑️</button>
-                    </td>`;
+                    h += `<tr><td><button class="action-icon" onclick="openEditModal('${tableName}', ${rowJson})">✏️</button><button class="action-icon" style="color:var(--danger)" onclick="openConfirmModal('Supprimer ?', async () => { await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: 'DELETE FROM ${tableName} WHERE ${columns[0]} = \\'${r[columns[0]]}\\' ' }) }); loadTableData('${tableName}'); })">🗑️</button></td>`;
                     Object.values(r).forEach(v => h += `<td>${v}</td>`);
                     h += `</tr>`;
                 });
                 resultDiv.innerHTML = h + `</tbody></table>`;
-            } else { resultDiv.innerHTML = `<p style="padding:20px; color:#888;">Table vide.</p>`; }
+            } else resultDiv.innerHTML = `<p style="padding:20px; color:#888;">Table vide.</p>`;
         }
 
-        function openConfirmModal(msg, action) {
-            document.getElementById('confirmMessage').innerText = msg;
-            document.getElementById('actionConfirmModal').style.display = 'block';
-            document.getElementById('confirmBtn').onclick = () => { action(); closeConfirmModal(); };
-        }
-
-        function openEmptyModal() {
-            if (!currentOpenedTable) return;
-            openConfirmModal(`Vider la table ${currentOpenedTable} ?`, async () => {
-                await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: `DELETE FROM ${currentOpenedTable}` }) });
-                loadTableData(currentOpenedTable);
+        async function executeQuickQuery() {
+            const query = document.getElementById('quickSqlQuery').value.trim();
+            if (!query) return;
+            openConfirmModal("Exécuter SQL ?", async () => {
+                const res = await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) });
+                const data = await res.json();
+                if (data.error) alert(data.error);
+                else { document.getElementById('quickSqlQuery').value = ""; if (currentOpenedTable) loadTableData(currentOpenedTable); }
             });
         }
 
@@ -443,9 +373,7 @@
             editRowData.idKey = editRowData.columns[0]; editRowData.idVal = rowData[editRowData.idKey];
             const container = document.getElementById('editFieldsContainer');
             container.innerHTML = "";
-            editRowData.columns.forEach(col => {
-                container.innerHTML += `<div class="edit-field"><label>${col}</label><input type="text" id="edit_col_${col}" value="${rowData[col]}"></div>`;
-            });
+            editRowData.columns.forEach(col => { container.innerHTML += `<div class="edit-field"><label>${col}</label><input type="text" id="edit_col_${col}" value="${rowData[col]}"></div>`; });
             document.getElementById('editRowModal').style.display = 'block';
         }
 
@@ -456,31 +384,61 @@
             closeEditModal(); loadTableData(editRowData.table);
         }
 
-        function promptCreateTable() {
-            document.getElementById('newTableName').value = "";
-            document.getElementById('newTableCols').value = "";
-            document.getElementById('createTableModal').style.display = 'block';
-        }
-
+        function promptCreateTable() { document.getElementById('createTableModal').style.display = 'block'; }
         async function submitCreateTable() {
-            const name = document.getElementById('newTableName').value.trim();
-            const cols = document.getElementById('newTableCols').value.trim();
-            if (!name || !cols) return;
-            const query = `CREATE TABLE IF NOT EXISTS ${name} (${cols})`;
-            await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) });
+            const n = document.getElementById('newTableName').value; const c = document.getElementById('newTableCols').value;
+            await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: `CREATE TABLE IF NOT EXISTS ${n} (${c})` }) });
             closeCreateModal(); openSqlBrowser();
         }
 
-        function searchCmd() {
-            let input = document.getElementById('searchInput').value.toLowerCase();
-            let rows = document.querySelectorAll('#cmdTable tbody tr');
-            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(input) ? "" : "none");
+        function openConfirmModal(msg, action) {
+            document.getElementById('confirmMessage').innerText = msg;
+            document.getElementById('actionConfirmModal').style.display = 'block';
+            document.getElementById('confirmBtn').onclick = () => { action(); closeConfirmModal(); };
         }
+
+        function openEmptyModal() { openConfirmModal(`Vider ${currentOpenedTable} ?`, async () => { await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: `DELETE FROM ${currentOpenedTable}` }) }); loadTableData(currentOpenedTable); }); }
+        function searchCmd() { let v = document.getElementById('searchInput').value.toLowerCase(); document.querySelectorAll('#cmdTable tr').forEach(r => r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none"); }
         function closeEditor() { document.getElementById('editorModal').style.display = 'none'; }
         function closeSqlBrowser() { document.getElementById('sqlModal').style.display = 'none'; }
         function closeEditModal() { document.getElementById('editRowModal').style.display = 'none'; }
         function closeConfirmModal() { document.getElementById('actionConfirmModal').style.display = 'none'; }
         function closeCreateModal() { document.getElementById('createTableModal').style.display = 'none'; }
+
+        setInterval(async () => {
+    try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        
+        document.getElementById('stat-ping').innerText = data.ping + "ms";
+        document.getElementById('stat-name').innerText = data.serverName;
+        document.getElementById('stat-users').innerText = data.users;
+        document.getElementById('stat-ram').innerText = data.ram + " MB";
+        
+        const icon = document.getElementById('stat-icon');
+        if (data.icon) {
+            icon.src = data.icon;
+            icon.style.display = 'block';
+        }
+
+        hasGeminiKey = data.geminiKey;
+        const aiStatusEl = document.getElementById('aiStatus');
+
+        if (!data.geminiKey) {
+            aiStatusEl.innerHTML = "<b class='alert-blink' style='color:var(--danger)'>⚠️ IA OFF (Manquante)</b>";
+        } else if (data.geminiValid === false) {
+            aiStatusEl.innerHTML = "<b class='alert-blink' style='color:var(--warning)'>❌ CLÉ INVALIDE</b>";
+            hasGeminiKey = false;
+        } else {
+            aiStatusEl.innerHTML = "<span style='color:var(--success)'>🟢 IA ACTIVE</span>";
+        }
+
+        const lr = await fetch('/get-panel-logs');
+        const ld = await lr.json();
+        document.getElementById('panelLogsBox').innerHTML = ld.logs.join('<br>');
+    } catch (e) {}
+}, 3000);
+
         function toggleTheme() {
             let t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t);
@@ -488,5 +446,4 @@
         document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
     </script>
 </body>
-
 </html>
