@@ -15,6 +15,8 @@ const rootDir = process.cwd();
 const app = express();
 
 let logsMemoire = []; 
+let isGeminiValid = false;
+let lastGeminiCheck = 0;
 
 async function addPanelLog(action) {
     const timestamp = new Date().toLocaleString('fr-FR');
@@ -87,11 +89,6 @@ app.post('/login', (req, res) => {
     };
 
     if (username === config.panelUser && password === config.panelPass) {
-        const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        db.run('CREATE TABLE IF NOT EXISTS login_history (username TEXT, ip TEXT, timestamp INTEGER)', () => {
-            db.run('INSERT INTO login_history (username, ip, timestamp) VALUES (?, ?, ?)', [username, userIP, Date.now()]);
-        });
-        
         req.session.loggedIn = true;
         addPanelLog(`Connexion de ${username}`);
         res.redirect('/');
@@ -128,27 +125,66 @@ app.get('/', checkAuth, async (req, res) => {
 
 app.get('/api/stats', checkAuth, async (req, res) => {
     const guild = global.client?.guilds.cache.get(config.panelGuildId);
+
+    if (config.geminiKey && Date.now() - lastGeminiCheck > 300000) {
+        try {
+            const genAI = new GoogleGenerativeAI(config.geminiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            await model.generateContent("ping");
+            isGeminiValid = true;
+        } catch (e) {
+            isGeminiValid = false;
+        }
+        lastGeminiCheck = Date.now();
+    }
+
     res.json({
         ping: global.client?.ws.ping || 0,
         serverName: guild ? guild.name : "Serveur introuvable",
         users: guild ? guild.memberCount : 0,
         ram: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
         icon: guild ? guild.iconURL({ dynamic: true, size: 64 }) : null,
-        geminiKey: !!config.geminiKey
+        geminiKey: !!config.geminiKey,
+        geminiValid: isGeminiValid
     });
 });
 
-app.post('/api/ai-generate', checkAuth, async (req, res) => {
-    const { prompt, code, fileName } = req.body;
+app.post('/api/ai-chat', checkAuth, async (req, res) => {
+    const { message, code, fileName, history } = req.body;
     if (!config.geminiKey) return res.status(400).json({ error: "Clé manquante" });
 
     try {
         const genAI = new GoogleGenerativeAI(config.geminiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(`En tant qu'expert Discord.js, modifie ce code (${fileName}) selon : ${prompt}. Retourne UNIQUEMENT le code, sans texte ni balises markdown.\n\nCode actuel :\n${code}`);
+
+        const context = history.map(h => `User: ${h.user}\nBot: ${h.bot}`).join("\n");
+        
+        const prompt = `Tu es un expert en Discord.js. 
+        Fichier actuel : ${fileName}
+        Code actuel : 
+        ${code}
+
+        Historique :
+        ${context}
+
+        Question de l'utilisateur : ${message}
+
+        Réponds de manière concise. Si tu proposes une modification de code, fournis le code complet mis à jour à la fin de ta réponse entouré de balises [CODE_START] et [CODE_END].`;
+
+        const result = await model.generateContent(prompt);
         const response = await result.response;
-        let newCode = response.text().replace(/```javascript/g, "").replace(/```/g, "").trim();
-        res.json({ newCode });
+        const text = response.text();
+
+        let reply = text;
+        let newCode = null;
+
+        if (text.includes("[CODE_START]") && text.includes("[CODE_END]")) {
+            newCode = text.split("[CODE_START]")[1].split("[CODE_END]")[0].trim();
+            newCode = newCode.replace(/```javascript/g, "").replace(/```/g, "").trim();
+            reply = text.split("[CODE_START]")[0].trim();
+        }
+
+        res.json({ reply, newCode });
     } catch (e) {
         res.status(500).json({ error: "Erreur IA" });
     }
