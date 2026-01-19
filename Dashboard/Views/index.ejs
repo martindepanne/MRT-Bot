@@ -31,203 +31,49 @@
             --vscode-bg: #f3f3f3;
         }
 
-        body {
-            font-family: sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            padding: 40px;
-            margin: 0;
+        @keyframes blink-red {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
+        .alert-blink {
+            animation: blink-red 1.5s infinite;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            background: var(--bg-header);
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            padding: 15px;
-            border-radius: 8px;
-            border-top: 3px solid var(--blurple);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-card span {
-            display: block;
-            color: var(--text-muted);
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .stat-card strong {
-            font-size: 18px;
-            color: var(--text-primary);
-        }
-
-        .stat-icon-img {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-            background: #202225;
-            object-fit: cover;
-        }
-
-        .btn-action {
-            border: none;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-        }
-
-        .system-bar {
-            background: var(--bg-card);
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 30px;
-            border-left: 4px solid var(--warning);
-        }
-
-        .module-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: 8px;
-            border-bottom: 3px solid var(--blurple);
-        }
-
-        .btn-toggle {
-            border: none;
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
-            font-weight: bold;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        #searchInput {
-            width: 100%;
-            padding: 12px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text-primary);
-            outline: none;
-            box-sizing: border-box;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 5px;
-        }
-
-        tr {
-            background: var(--bg-card);
-        }
-
-        td {
-            padding: 12px 15px;
-            vertical-align: middle;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        .modal-content {
-            background: var(--vscode-bg);
-            margin: 2% auto;
-            width: 90%;
-            max-width: 1000px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #444;
-        }
-
-        .vscode-header {
-            background: #323233;
-            color: #ccc;
-            padding: 10px;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .vscode-editor {
-            width: 100%;
-            height: 500px;
-            background: #1e1e1e;
-            color: #d4d4d4;
-            border: none;
-            padding: 20px;
-            font-family: 'Consolas', monospace;
-            font-size: 14px;
-            outline: none;
-            box-sizing: border-box;
-            resize: none;
-        }
-
-        .console-box {
-            background: #1a1a1a;
-            color: #5865F2;
-            font-family: 'Consolas', monospace;
-            padding: 15px;
-            border-radius: 8px;
-            height: 180px;
-            overflow-y: auto;
-            font-size: 12px;
-            margin-top: 30px;
-            border: 1px solid #333;
-        }
+        body { font-family: sans-serif; background: var(--bg-main); color: var(--text-primary); padding: 40px; margin: 0; }
+        .container { max-width: 1200px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--bg-header); padding: 20px; border-radius: 8px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: var(--bg-card); padding: 15px; border-radius: 8px; border-top: 3px solid var(--blurple); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .stat-card span { display: block; color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-card strong { font-size: 18px; color: var(--text-primary); }
+        .stat-icon-img { width: 35px; height: 35px; border-radius: 50%; margin-bottom: 8px; background: #202225; object-fit: cover; }
+        .btn-action { border: none; color: white; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; font-size: 12px; }
+        .system-bar { background: var(--bg-card); padding: 15px; border-radius: 8px; display: flex; gap: 15px; align-items: center; margin-bottom: 30px; border-left: 4px solid var(--warning); }
+        .module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .card { background: var(--bg-card); padding: 20px; border-radius: 8px; border-bottom: 3px solid var(--blurple); }
+        .btn-toggle { border: none; padding: 10px; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; width: 100%; margin-top: 15px; }
+        #searchInput { width: 100%; padding: 12px; margin: 20px 0; border-radius: 4px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary); outline: none; box-sizing: border-box; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
+        tr { background: var(--bg-card); }
+        td { padding: 12px 15px; vertical-align: middle; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); }
+        .modal-content { background: var(--vscode-bg); margin: 2% auto; width: 90%; max-width: 1100px; border-radius: 8px; overflow: hidden; border: 1px solid #444; }
+        .vscode-header { background: #323233; color: #ccc; padding: 10px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .vscode-editor { width: 100%; height: 500px; background: #1e1e1e; color: #d4d4d4; border: none; padding: 20px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; box-sizing: border-box; resize: none; }
+        .console-box { background: #1a1a1a; color: #5865F2; font-family: 'Consolas', monospace; padding: 15px; border-radius: 8px; height: 180px; overflow-y: auto; font-size: 12px; margin-top: 30px; border: 1px solid #333; }
+        .pma-table { width: 100%; border-collapse: collapse; background: #1a1a1a; }
+        .pma-table th { background: #2d2d2d; color: #fff; text-align: left; padding: 10px; border: 1px solid #444; }
+        .pma-table td { padding: 10px; border: 1px solid #444; color: #ccc; font-size: 13px; }
+        .action-icon { cursor: pointer; font-size: 14px; background: none; border: none; padding: 4px; transition: 0.2s; }
+        .action-icon:hover { transform: scale(1.2); }
+        .edit-field { margin-bottom: 15px; }
+        .edit-field label { display: block; color: #aaa; font-size: 12px; margin-bottom: 5px; }
+        .edit-field input { width: 100%; padding: 8px; background: #1e1e1e; border: 1px solid #444; color: white; box-sizing: border-box; }
+        .help-box { background: #2d2d2d; padding: 10px; border-radius: 4px; margin-top: 10px; border-left: 3px solid var(--blurple); font-size: 12px; color: #ccc; }
+        .ai-sidebar { width: 250px; background: #252526; border-left: 1px solid #444; display: flex; flex-direction: column; padding: 15px; }
+        .ai-input { background: #3c3c3c; border: 1px solid #555; color: white; padding: 8px; border-radius: 4px; resize: none; height: 100px; font-size: 12px; margin-bottom: 10px; }
     </style>
 </head>
 
@@ -237,39 +83,22 @@
             <h1>MRT-Bot Dashboard</h1>
             <div style="display: flex; gap: 10px;">
                 <button class="btn-action" style="background: var(--blurple)" onclick="toggleTheme()">🌓 Thème</button>
-                <a href="/login" class="btn-action"
-                    style="background: var(--danger); text-decoration: none;">Déconnexion</a>
+                <a href="/login" class="btn-action" style="background: var(--danger); text-decoration: none;">Déconnexion</a>
             </div>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card">
-                <span>📡 Latence</span>
-                <strong id="stat-ping"><%= stats.ping %>ms</strong>
-            </div>
-            <div class="stat-card">
-                <img id="stat-icon" class="stat-icon-img" src="" style="display: none;">
-                <span>🌐 Serveur</span>
-                <strong id="stat-name"><%= stats.serverName %></strong>
-            </div>
-            <div class="stat-card">
-                <span>👥 Membres</span>
-                <strong id="stat-users"><%= stats.users %></strong>
-            </div>
-            <div class="stat-card">
-                <span>💾 RAM</span>
-                <strong id="stat-ram"><%= stats.ram %> MB</strong>
-            </div>
+            <div class="stat-card"><span>📡 Latence</span><strong id="stat-ping"><%= stats.ping %>ms</strong></div>
+            <div class="stat-card"><img id="stat-icon" class="stat-icon-img" src="" style="display: none;"><span>🌐 Serveur</span><strong id="stat-name"><%= stats.serverName %></strong></div>
+            <div class="stat-card"><span>👥 Membres</span><strong id="stat-users"><%= stats.users %></strong></div>
+            <div class="stat-card"><span>💾 RAM</span><strong id="stat-ram"><%= stats.ram %> MB</strong></div>
         </div>
 
         <div class="system-bar">
             <strong>📦 Système :</strong>
-            <button class="btn-action" style="background: var(--warning); color: #000;"
-                onclick="openEditor('config.json', true)">🛠️ Config</button>
-            <button class="btn-action" style="background: var(--success);" onclick="openSqlBrowser()">📂 Explorer
-                SQLite</button>
-            <a href="/download-db" class="btn-action" style="background: #4e5058; text-decoration: none;">💾 DB
-                Backup</a>
+            <button class="btn-action" style="background: var(--warning); color: #000;" onclick="openEditor('config.json', true)">🛠️ Config</button>
+            <button class="btn-action" style="background: var(--success);" onclick="openSqlBrowser()">📂 Explorer SQLite</button>
+            <a href="/download-db" class="btn-action" style="background: #4e5058; text-decoration: none;">💾 DB Backup</a>
         </div>
 
         <h2>⚙️ Modules</h2>
@@ -279,15 +108,13 @@
                 <% const mod=modules.find(m=> m.moduleName === name); const isEnabled = mod ? mod.enabled : 1; %>
                 <div class="card">
                     <div style="display: flex; justify-content: space-between;">
-                        <strong><%= name %></strong> 
+                        <strong><%= name %></strong>
                         <span style="color: <%= isEnabled ? '#43b581' : '#f04747' %>; font-size: 11px;">● <%= isEnabled ? 'Allumer' : 'Éteindre' %></span>
                     </div>
                     <form action="/toggle-module" method="POST">
                         <input type="hidden" name="moduleName" value="<%= name %>">
                         <input type="hidden" name="currentState" value="<%= isEnabled %>">
-                        <button type="submit" class="btn-toggle" style="background: <%= isEnabled ? '#f04747' : '#43b581' %>">
-                            <%= isEnabled ? 'Éteindre' : 'Allumer' %>
-                        </button>
+                        <button type="submit" class="btn-toggle" style="background: <%= isEnabled ? '#f04747' : '#43b581' %>"><%= isEnabled ? 'Éteindre' : 'Allumer' %></button>
                     </form>
                 </div>
             <% }); %>
@@ -308,9 +135,7 @@
                                 <form action="/toggle-command" method="POST" style="margin:0;">
                                     <input type="hidden" name="commandName" value="<%= cmd.name %>">
                                     <input type="hidden" name="currentState" value="<%= isEnabled %>">
-                                    <button type="submit" style="background: <%= isEnabled ? '#f04747' : '#43b581' %>; border:none; color:white; padding:5px 12px; border-radius:4px; cursor:pointer;">
-                                        <%= isEnabled ? 'Éteindre' : 'Allumer' %>
-                                    </button>
+                                    <button type="submit" style="background: <%= isEnabled ? '#f04747' : '#43b581' %>; border:none; color:white; padding:5px 12px; border-radius:4px; cursor:pointer;"><%= isEnabled ? 'Éteindre' : 'Allumer' %></button>
                                 </form>
                             </div>
                         </td>
@@ -319,14 +144,27 @@
             </tbody>
         </table>
 
-        <h2>🛠️ Logs du Panel</h2>
         <div id="panelLogsBox" class="console-box">En attente d'actions...</div>
     </div>
 
     <div id="editorModal" class="modal">
-        <div class="modal-content">
-            <div class="vscode-header"><span id="fileNameDisplay">script.js</span><span onclick="closeEditor()" style="cursor:pointer">✖</span></div>
-            <textarea id="codeEditor" class="vscode-editor" spellcheck="false"></textarea>
+        <div class="modal-content" style="max-width: 1200px;">
+            <div class="vscode-header">
+                <span id="fileNameDisplay">script.js</span>
+                <span id="aiStatus" style="font-size: 10px; color: var(--text-muted);"></span>
+                <span onclick="closeEditor()" style="cursor:pointer">✖</span>
+            </div>
+            <div style="display: flex; height: 600px;">
+                <textarea id="codeEditor" class="vscode-editor" spellcheck="false" style="flex: 1;"></textarea>
+                <div id="aiSidebar" class="ai-sidebar">
+                    <strong style="font-size: 12px; color: var(--blurple); margin-bottom: 10px;">✨ Assistant IA</strong>
+                    <div id="aiContent">
+                        <textarea id="aiPrompt" class="ai-input" placeholder="Décris la modification à faire..."></textarea>
+                        <button class="btn-action" style="background: var(--blurple); width: 100%; justify-content: center;" onclick="askAI()">🚀 Générer</button>
+                        <p style="font-size: 10px; color: #888; margin-top: 10px;">L'IA modifiera directement le code ci-contre.</p>
+                    </div>
+                </div>
+            </div>
             <div style="padding: 10px; background: #252526; display: flex; justify-content: flex-end; gap: 10px;">
                 <button class="btn-action" style="background:#444" onclick="closeEditor()">Annuler</button>
                 <button class="btn-action" style="background:#007acc" onclick="saveCode()">Enregistrer</button>
@@ -335,14 +173,77 @@
     </div>
 
     <div id="sqlModal" class="modal">
-        <div class="modal-content" style="max-width: 1100px; height: 85vh; display: flex; flex-direction: column;">
-            <div class="vscode-header"><span>Browser SQLite</span><span onclick="closeSqlBrowser()" style="cursor:pointer">✖</span></div>
+        <div class="modal-content" style="height: 85vh; display: flex; flex-direction: column;">
+            <div class="vscode-header"><span>SQL Browser (database.sqlite3)</span><span onclick="closeSqlBrowser()" style="cursor:pointer">✖</span></div>
             <div style="display: flex; flex: 1; overflow: hidden;">
-                <div id="tableList" style="width: 200px; background: #252526; border-right: 1px solid #444; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;"></div>
-                <div style="flex: 1; display: flex; flex-direction: column; padding: 15px; background: #1e1e1e; overflow: hidden;">
-                    <textarea id="sqlQueryInput" style="width: 100%; height: 80px; background: #2d2d2d; color: #9cdcfe; border: 1px solid #444; padding: 10px; font-family: monospace;"></textarea>
-                    <button class="btn-action" style="background: var(--blurple); margin: 10px 0; width: fit-content;" onclick="runSqlQuery()">Exécuter</button>
-                    <div id="sqlResult" style="flex: 1; overflow: auto; background: #1a1a1a; border: 1px solid #333; font-size: 13px;"></div>
+                <div id="tableList" style="width: 220px; background: #252526; border-right: 1px solid #444; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
+                <div style="flex: 1; display: flex; flex-direction: column; background: #1e1e1e; padding: 15px; overflow: hidden;">
+                    <div style="background: #252526; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #444;">
+                        <div style="display: flex; gap: 10px; align-items: flex-end;">
+                            <div style="flex: 1;">
+                                <label style="display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">⚡ Exécuter une ligne SQL</label>
+                                <input type="text" id="quickSqlQuery" placeholder="Ex: UPDATE users SET money = 1000 WHERE userId = '123'" 
+                                       style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #333; color: #4ec9b0; font-family: 'Consolas', monospace; border-radius: 4px; outline: none;">
+                            </div>
+                            <button class="btn-action" style="background: var(--blurple); height: 34px;" onclick="executeQuickQuery()">▶️</button>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button class="btn-action" style="background: var(--blurple);" onclick="promptCreateTable()">➕ Créer une table</button>
+                        <button class="btn-action" style="background: var(--warning); color:#000; display:none;" id="emptyTableBtn" onclick="openEmptyModal()">🗑️ Vider la table</button>
+                    </div>
+                    <div id="sqlResult" style="flex: 1; overflow: auto; background: #1a1a1a; border: 1px solid #333;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editRowModal" class="modal">
+        <div class="modal-content" style="max-width: 500px; margin-top: 10%;">
+            <div class="vscode-header"><span>✏️ Éditer la ligne</span><span onclick="closeEditModal()" style="cursor:pointer">✖</span></div>
+            <div id="editFieldsContainer" style="padding: 20px;"></div>
+            <div style="padding: 15px; background: #252526; display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-action" style="background:#444" onclick="closeEditModal()">Annuler</button>
+                <button class="btn-action" style="background:var(--success)" onclick="submitEdit()">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="createTableModal" class="modal">
+        <div class="modal-content" style="max-width: 550px; margin-top: 8%;">
+            <div class="vscode-header"><span>➕ Créer une nouvelle table</span><span onclick="closeCreateModal()" style="cursor:pointer">✖</span></div>
+            <div style="padding: 20px;">
+                <div class="edit-field">
+                    <label>Nom de la table</label>
+                    <input type="text" id="newTableName" placeholder="ex: economy">
+                </div>
+                <div class="edit-field">
+                    <label>Colonnes (Format SQL)</label>
+                    <input type="text" id="newTableCols" placeholder="id INTEGER PRIMARY KEY, userId TEXT, balance INT">
+                </div>
+                <div class="help-box" style="line-height: 1.6;">
+                    <strong style="color:var(--blurple); display: block; margin-bottom: 5px;">🌱 Guide pour débutants :</strong>
+                    • <code style="color:#ce9178">TEXT</code> : Pour du texte (ex: <b>pseudo</b>).<br>
+                    • <code style="color:#b5cea8">INTEGER</code> : Pour des nombres (ex: <b>argent</b>).<br>
+                    • <code style="color:#569cd6">PRIMARY KEY</code> : La clé unique (souvent sur l'<b>id</b>).<br>
+                    <span style="font-size: 11px; color: #888; display: block; margin-top: 5px;">💡 <i>Exemple : <code>userId TEXT PRIMARY KEY, money INTEGER</code></i></span>
+                </div>
+            </div>
+            <div style="padding: 15px; background: #252526; display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-action" style="background:#444" onclick="closeCreateModal()">Annuler</button>
+                <button class="btn-action" style="background:var(--blurple)" onclick="submitCreateTable()">Créer la table</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="actionConfirmModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; margin-top: 15%;">
+            <div class="vscode-header"><span>Confirmation</span><span onclick="closeConfirmModal()" style="cursor:pointer">✖</span></div>
+            <div style="padding: 20px; text-align: center;">
+                <p id="confirmMessage">Voulez-vous vraiment effectuer cette action ?</p>
+                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                    <button class="btn-action" style="background:#444" onclick="closeConfirmModal()">Annuler</button>
+                    <button class="btn-action" style="background:var(--danger)" id="confirmBtn">Confirmer</button>
                 </div>
             </div>
         </div>
@@ -350,6 +251,9 @@
 
     <script>
         let currentEditingFile = "";
+        let currentOpenedTable = "";
+        let hasGeminiKey = false;
+        let editRowData = { table: "", idKey: "", idVal: "", columns: [] };
 
         setInterval(async () => {
             try {
@@ -359,29 +263,67 @@
                 document.getElementById('stat-name').innerText = dataStats.serverName;
                 document.getElementById('stat-users').innerText = dataStats.users;
                 document.getElementById('stat-ram').innerText = dataStats.ram + " MB";
-                
                 const iconImg = document.getElementById('stat-icon');
-                if(dataStats.icon) {
-                    iconImg.src = dataStats.icon;
-                    iconImg.style.display = 'block';
+                if (dataStats.icon) { iconImg.src = dataStats.icon; iconImg.style.display = 'block'; }
+
+                hasGeminiKey = !!dataStats.geminiKey;
+                const aiStatus = document.getElementById('aiStatus');
+                const aiContent = document.getElementById('aiContent');
+
+                if (!hasGeminiKey) {
+                    aiStatus.innerHTML = "<b class='alert-blink' style='font-size: 16px;'>⚠️ CLÉ GEMINI NON CONFIGURÉE</b>";
+                    aiStatus.style.color = "var(--danger)";
+                    
+                    if (aiContent && !aiContent.querySelector('.no-key-alert')) {
+                        aiContent.innerHTML = `
+                            <div class="no-key-alert" style="text-align:center; padding: 20px; border: 2px dashed var(--danger); border-radius: 8px; margin-top: 10px; background: rgba(240, 71, 71, 0.1);">
+                                <p style="color: var(--danger); font-weight: bold; font-size: 16px; margin-bottom: 10px;">ACCÈS IA REFUSÉ</p>
+                                <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                                    L'assistant est désactivé car aucune <b>geminiKey</b> n'a été trouvée dans votre <code>config.json</code>.
+                                </p>
+                                <button class="btn-action" style="background: var(--warning); color: #000; width: 100%; margin-top: 15px; justify-content: center;" onclick="openEditor('config.json', true)">Régler maintenant</button>
+                            </div>
+                        `;
+                    }
                 } else {
-                    iconImg.style.display = 'none';
+                    aiStatus.innerText = "🟢 IA Prête";
+                    aiStatus.style.color = "var(--success)";
+                    aiStatus.classList.remove('alert-blink');
+
+                    if (aiContent && aiContent.querySelector('.no-key-alert')) {
+                        aiContent.innerHTML = `
+                            <textarea id="aiPrompt" class="ai-input" placeholder="Décris la modification à faire..."></textarea>
+                            <button class="btn-action" style="background: var(--blurple); width: 100%; justify-content: center;" onclick="askAI()">🚀 Générer</button>
+                            <p style="font-size: 10px; color: #888; margin-top: 10px;">L'IA modifiera directement le code ci-contre.</p>
+                        `;
+                    }
                 }
 
                 const resLogs = await fetch('/get-panel-logs');
                 const dataLogs = await resLogs.json();
                 const logBox = document.getElementById('panelLogsBox');
-                if (dataLogs.logs.length > 0) {
-                    logBox.innerHTML = dataLogs.logs.join('<br>');
-                    logBox.scrollTop = logBox.scrollHeight;
-                }
+                if (dataLogs.logs.length > 0) { logBox.innerHTML = dataLogs.logs.join('<br>'); logBox.scrollTop = logBox.scrollHeight; }
             } catch (e) { }
         }, 3000);
 
-        function searchCmd() {
-            let input = document.getElementById('searchInput').value.toLowerCase();
-            let rows = document.querySelectorAll('#cmdTable tbody tr');
-            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(input) ? "" : "none");
+        async function executeQuickQuery() {
+            const query = document.getElementById('quickSqlQuery').value.trim();
+            if (!query) return;
+            if (!confirm("Exécuter cette commande SQL ?")) return;
+            try {
+                const res = await fetch('/sql-query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                const data = await res.json();
+                if (data.error) alert("Erreur: " + data.error);
+                else {
+                    alert("Succès !");
+                    document.getElementById('quickSqlQuery').value = "";
+                    if (currentOpenedTable) loadTableData(currentOpenedTable);
+                }
+            } catch (e) { alert("Erreur serveur"); }
         }
 
         async function openEditor(name, isRaw = false) {
@@ -393,6 +335,28 @@
             document.getElementById('codeEditor').value = data.content || data.error;
         }
 
+        async function askAI() {
+            if (!hasGeminiKey) return alert("Veuillez configurer votre clé Gemini d'abord.");
+            const prompt = document.getElementById('aiPrompt').value;
+            const currentCode = document.getElementById('codeEditor').value;
+            if (!prompt) return;
+            const btn = document.querySelector('.ai-sidebar .btn-action');
+            btn.innerText = "⌛ Analyse...";
+            try {
+                const res = await fetch('/api/ai-generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, code: currentCode, fileName: currentEditingFile })
+                });
+                const data = await res.json();
+                if (data.newCode) {
+                    document.getElementById('codeEditor').value = data.newCode;
+                    document.getElementById('aiPrompt').value = "";
+                }
+            } catch (e) { }
+            btn.innerText = "🚀 Générer";
+        }
+
         async function saveCode() {
             const content = document.getElementById('codeEditor').value;
             const res = await fetch('/save-script', {
@@ -400,7 +364,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ fileName: currentEditingFile, content })
             });
-            if ((await res.json()).success) { alert("Enregistré !"); closeEditor(); }
+            if ((await res.json()).success) { closeEditor(); }
         }
 
         async function openSqlBrowser() {
@@ -410,37 +374,116 @@
             const list = document.getElementById('tableList');
             list.innerHTML = '';
             tables.forEach(t => {
+                const container = document.createElement('div');
+                container.style = "display:flex; justify-content:space-between; align-items:center; background:#2d2d2d; border-radius:4px; padding-right:5px; margin-bottom:5px;";
                 const b = document.createElement('button');
-                b.innerText = t; b.style = "background:none; border:none; color:#ddd; text-align:left; cursor:pointer; padding:8px; font-size:13px; border-radius:4px;";
-                b.onclick = () => { document.getElementById('sqlQueryInput').value = `SELECT * FROM ${t} LIMIT 100`; runSqlQuery(); };
-                list.appendChild(b);
+                b.innerText = t; b.style = "background:none; border:none; color:#ddd; text-align:left; cursor:pointer; padding:8px; font-size:13px; flex:1;";
+                b.onclick = () => { loadTableData(t); };
+                const del = document.createElement('button');
+                del.innerHTML = "🗑️"; del.style = "background:none; border:none; color:var(--danger); cursor:pointer;";
+                del.onclick = (e) => {
+                    e.stopPropagation(); openConfirmModal(`Supprimer la table ${t} ?`, async () => {
+                        await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: `DROP TABLE ${t}` }) });
+                        openSqlBrowser();
+                    });
+                };
+                container.appendChild(b); container.appendChild(del);
+                list.appendChild(container);
             });
         }
 
-        async function runSqlQuery() {
-            const query = document.getElementById('sqlQueryInput').value;
+        async function loadTableData(tableName) {
+            currentOpenedTable = tableName;
+            document.getElementById('emptyTableBtn').style.display = 'flex';
             const res = await fetch('/sql-query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query })
+                body: JSON.stringify({ query: `SELECT * FROM ${tableName} LIMIT 100` })
             });
             const data = await res.json();
             const resultDiv = document.getElementById('sqlResult');
-            if (data.type === 'data' && data.rows.length > 0) {
-                let h = '<table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#333;">';
-                Object.keys(data.rows[0]).forEach(k => h += `<th style="padding:10px; border:1px solid #444;">${k}</th>`);
-                h += '</tr></thead><tbody>';
-                data.rows.forEach(r => { h += '<tr>'; Object.values(r).forEach(v => h += `<td style="padding:10px; border:1px solid #444;">${v}</td>`); h += '</tr>'; });
-                resultDiv.innerHTML = h + '</tbody></table>';
-            } else { resultDiv.innerHTML = `<p style="padding:15px;">${data.message || data.error || "Terminé."}</p>`; }
+            if (data.rows && data.rows.length > 0) {
+                const columns = Object.keys(data.rows[0]);
+                let h = `<table class="pma-table"><thead><tr><th style="width:70px;">Actions</th>`;
+                columns.forEach(k => h += `<th>${k}</th>`);
+                h += `</tr></thead><tbody>`;
+                data.rows.forEach(r => {
+                    const rowJson = JSON.stringify(r).replace(/"/g, '&quot;');
+                    h += `<tr><td>
+                        <button class="action-icon" onclick="openEditModal('${tableName}', ${rowJson})">✏️</button>
+                        <button class="action-icon" style="color:var(--danger)" onclick="openConfirmModal('Supprimer cette ligne ?', async () => {
+                            const query = 'DELETE FROM ${tableName} WHERE ${columns[0]} = \\'${r[columns[0]]}\\'';
+                            await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) });
+                            loadTableData('${tableName}');
+                        })">🗑️</button>
+                    </td>`;
+                    Object.values(r).forEach(v => h += `<td>${v}</td>`);
+                    h += `</tr>`;
+                });
+                resultDiv.innerHTML = h + `</tbody></table>`;
+            } else { resultDiv.innerHTML = `<p style="padding:20px; color:#888;">Table vide.</p>`; }
         }
 
+        function openConfirmModal(msg, action) {
+            document.getElementById('confirmMessage').innerText = msg;
+            document.getElementById('actionConfirmModal').style.display = 'block';
+            document.getElementById('confirmBtn').onclick = () => { action(); closeConfirmModal(); };
+        }
+
+        function openEmptyModal() {
+            if (!currentOpenedTable) return;
+            openConfirmModal(`Vider la table ${currentOpenedTable} ?`, async () => {
+                await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: `DELETE FROM ${currentOpenedTable}` }) });
+                loadTableData(currentOpenedTable);
+            });
+        }
+
+        function openEditModal(tableName, rowData) {
+            editRowData.table = tableName; editRowData.columns = Object.keys(rowData);
+            editRowData.idKey = editRowData.columns[0]; editRowData.idVal = rowData[editRowData.idKey];
+            const container = document.getElementById('editFieldsContainer');
+            container.innerHTML = "";
+            editRowData.columns.forEach(col => {
+                container.innerHTML += `<div class="edit-field"><label>${col}</label><input type="text" id="edit_col_${col}" value="${rowData[col]}"></div>`;
+            });
+            document.getElementById('editRowModal').style.display = 'block';
+        }
+
+        async function submitEdit() {
+            const updates = editRowData.columns.map(col => `${col} = '${document.getElementById(`edit_col_${col}`).value}'`);
+            const query = `UPDATE ${editRowData.table} SET ${updates.join(', ')} WHERE ${editRowData.idKey} = '${editRowData.idVal}'`;
+            await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) });
+            closeEditModal(); loadTableData(editRowData.table);
+        }
+
+        function promptCreateTable() {
+            document.getElementById('newTableName').value = "";
+            document.getElementById('newTableCols').value = "";
+            document.getElementById('createTableModal').style.display = 'block';
+        }
+
+        async function submitCreateTable() {
+            const name = document.getElementById('newTableName').value.trim();
+            const cols = document.getElementById('newTableCols').value.trim();
+            if (!name || !cols) return;
+            const query = `CREATE TABLE IF NOT EXISTS ${name} (${cols})`;
+            await fetch('/sql-query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) });
+            closeCreateModal(); openSqlBrowser();
+        }
+
+        function searchCmd() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let rows = document.querySelectorAll('#cmdTable tbody tr');
+            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(input) ? "" : "none");
+        }
         function closeEditor() { document.getElementById('editorModal').style.display = 'none'; }
         function closeSqlBrowser() { document.getElementById('sqlModal').style.display = 'none'; }
+        function closeEditModal() { document.getElementById('editRowModal').style.display = 'none'; }
+        function closeConfirmModal() { document.getElementById('actionConfirmModal').style.display = 'none'; }
+        function closeCreateModal() { document.getElementById('createTableModal').style.display = 'none'; }
         function toggleTheme() {
             let t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', t);
-            localStorage.setItem('theme', t);
+            document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t);
         }
         document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
     </script>
