@@ -114,31 +114,63 @@ app.get('/', checkAuth, async (req, res) => {
     } catch (error) { res.send("Erreur de chargement."); }
 });
 
-app.get('/api/stats', checkAuth, async (req, res) => {
-    const guildId = config.panelGuildId;
-    const guild = global.client?.guilds.cache.get(guildId);
+app.get('/api/stats', async (req, res) => {
+    let geminiValid = true;
+    if (config.geminiKey) {
+        try {
+            const genAI = new GoogleGenerativeAI(config.geminiKey);
+            await genAI.getGenerativeModel({ model: "gemini-1.5-flash" }).generateContent("test");
+        } catch (e) {
+            geminiValid = false;
+        }
+    }
 
     res.json({
-        ping: global.client?.ws.ping || 0,
-        serverName: guild ? guild.name : "Serveur introuvable",
-        users: guild ? guild.memberCount : 0,
+        ping: Date.now() - req.startTime,
+        serverName: client.guilds.cache.first()?.name || "Bot",
+        users: client.users.cache.size,
         ram: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
-        icon: guild ? guild.iconURL({ dynamic: true, size: 64 }) : null,
-        geminiKey: !!config.geminiKey
+        geminiKey: !!config.geminiKey,
+        geminiValid: geminiValid
     });
 });
 
-app.post('/api/ai-generate', checkAuth, async (req, res) => {
-    const { prompt, code, fileName } = req.body;
+app.post('/api/ai-chat', checkAuth, async (req, res) => {
+    const { message, code, fileName, history } = req.body;
     if (!config.geminiKey) return res.status(400).json({ error: "Clé manquante" });
 
     try {
         const genAI = new GoogleGenerativeAI(config.geminiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(`En tant qu'expert Discord.js, modifie ce code (${fileName}) selon : ${prompt}. Retourne UNIQUEMENT le code, sans texte ni balises markdown.\n\nCode actuel :\n${code}`);
+
+        const context = history.map(h => `User: ${h.user}\nBot: ${h.bot}`).join("\n");
+        
+        const prompt = `Tu es un expert en Discord.js. 
+        Fichier actuel : ${fileName}
+        Code actuel : 
+        ${code}
+
+        Historique :
+        ${context}
+
+        Question de l'utilisateur : ${message}
+
+        Réponds de manière concise. Si tu proposes une modification de code, fournis le code complet mis à jour à la fin de ta réponse entouré de balises [CODE_START] et [CODE_END].`;
+
+        const result = await model.generateContent(prompt);
         const response = await result.response;
-        let newCode = response.text().replace(/```javascript/g, "").replace(/```/g, "").trim();
-        res.json({ newCode });
+        const text = response.text();
+
+        let reply = text;
+        let newCode = null;
+
+        if (text.includes("[CODE_START]") && text.includes("[CODE_END]")) {
+            newCode = text.split("[CODE_START]")[1].split("[CODE_END]")[0].trim();
+            newCode = newCode.replace(/```javascript/g, "").replace(/```/g, "").trim();
+            reply = text.split("[CODE_START]")[0].trim();
+        }
+
+        res.json({ reply, newCode });
     } catch (e) {
         res.status(500).json({ error: "Erreur IA" });
     }
