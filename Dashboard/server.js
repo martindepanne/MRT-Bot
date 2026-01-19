@@ -7,6 +7,7 @@ import axios from 'axios';
 import db from '../Events/loadDatabase.js';
 import { getAllCommands } from './utils.js';
 import config from "../config.json" with { type: 'json' };
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -66,7 +67,7 @@ function checkAuth(req, res, next) {
 }
 
 app.get('/login', (req, res) => {
-    const guild = client.guilds.cache.get(config.panelGuildId);
+    const guild = global.client?.guilds.cache.get(config.panelGuildId);
     const stats = {
         serverName: guild ? guild.name : "Serveur Discord",
         serverIcon: guild ? guild.iconURL({ extension: 'png', size: 512 }) : 'https://cdn.discordapp.com/embed/avatars/0.png'
@@ -76,7 +77,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    const guild = client.guilds.cache.get(config.panelGuildId);
+    const guild = global.client?.guilds.cache.get(config.panelGuildId);
     const stats = {
         serverName: guild ? guild.name : "Serveur Discord",
         serverIcon: guild ? guild.iconURL({ extension: 'png', size: 512 }) : 'https://cdn.discordapp.com/embed/avatars/0.png'
@@ -122,8 +123,25 @@ app.get('/api/stats', checkAuth, async (req, res) => {
         serverName: guild ? guild.name : "Serveur introuvable",
         users: guild ? guild.memberCount : 0,
         ram: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
-        icon: guild ? guild.iconURL({ dynamic: true, size: 64 }) : null
+        icon: guild ? guild.iconURL({ dynamic: true, size: 64 }) : null,
+        geminiKey: !!config.geminiKey
     });
+});
+
+app.post('/api/ai-generate', checkAuth, async (req, res) => {
+    const { prompt, code, fileName } = req.body;
+    if (!config.geminiKey) return res.status(400).json({ error: "Clé manquante" });
+
+    try {
+        const genAI = new GoogleGenerativeAI(config.geminiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent(`En tant qu'expert Discord.js, modifie ce code (${fileName}) selon : ${prompt}. Retourne UNIQUEMENT le code, sans texte ni balises markdown.\n\nCode actuel :\n${code}`);
+        const response = await result.response;
+        let newCode = response.text().replace(/```javascript/g, "").replace(/```/g, "").trim();
+        res.json({ newCode });
+    } catch (e) {
+        res.status(500).json({ error: "Erreur IA" });
+    }
 });
 
 app.get('/get-panel-logs', checkAuth, (req, res) => {
